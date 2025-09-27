@@ -2,6 +2,8 @@
  * 实现代理请求，绕过 referer 限制
  */
 
+ import {decode} from 'base64-arraybuffer'
+
 interface CloudFunctionInnerResult {
   success: boolean;
   statusCode?: number;
@@ -76,12 +78,12 @@ function proxyRequest<
       if (innerResult.success) {
         let responseData: T;
 
-        // 处理二进制数据（arraybuffer类型）
+        // 处理二进制数据
         if (responseType === 'arraybuffer') {
           if (typeof innerResult.rawData === 'string') {
             // 安全转换 Base64 到 ArrayBuffer
             try {
-              const bytes = wx.base64ToArrayBuffer(innerResult.rawData);
+              const bytes = decode(innerResult.rawData);
               responseData = bytes as unknown as T;
             } catch (e) {
               // 转换失败时返回原始数据

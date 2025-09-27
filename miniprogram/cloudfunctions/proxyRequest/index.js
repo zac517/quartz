@@ -15,7 +15,7 @@ exports.main = async (event, context) => {
       timeout,
       headers: requestHeaders,
       resolveWithFullResponse: true,
-      encoding: responseType === 'arraybuffer' ? null : 'utf8' // 二进制用buffer
+      encoding: responseType === 'arraybuffer' ? null : 'utf8' // 二进制用 buffer
     };
 
     // 处理请求参数
