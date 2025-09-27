@@ -74,7 +74,6 @@ class CookieStore {
       const cookies = this.splitCookieHeader(header as string);
       processedHeaders.push(...cookies);
     });
-    console.log(processedHeaders)
 
     processedHeaders.forEach(cookieStr => {
       const cookie = this.parseCookie(cookieStr, url);
@@ -93,18 +92,20 @@ class CookieStore {
 
   /**
    * 分割可能用逗号分隔多个Cookie的头部字符串
-   * 修复了逗号后字符被误删除的问题
+   * 修复了逗号后字符被误删除的问题，支持复用
+   * @param header - 需要分割的Cookie头部字符串
+   * @returns 分割后的单个Cookie字符串数组
    */
-  private splitCookieHeader(header: string): string[] {
+  public splitCookieHeader(header: string): string[] {
     const cookies = [];
     let currentCookie = [];
     let inQuotes = false;
 
-    // 按字符遍历，智能分割
+    // 按字符遍历，智能分割（区分分隔符逗号和属性内逗号）
     for (let i = 0; i < header.length; i++) {
       const char = header[i];
       
-      // 检测引号状态
+      // 检测引号状态（引号内的逗号不视为分隔符）
       if (char === '"') {
         inQuotes = !inQuotes;
         currentCookie.push(char);
@@ -113,10 +114,9 @@ class CookieStore {
       
       // 检测逗号作为Cookie分隔符（不在引号内且后面有空格）
       if (char === ',' && !inQuotes) {
-        // 检查下一个字符是否是空格（Cookie分隔符通常是 ", "）
         const nextChar = i + 1 < header.length ? header[i + 1] : '';
         
-        // 确定是Cookie分隔符
+        // 确定是Cookie分隔符，保存当前Cookie并重置
         cookies.push(currentCookie.join('').trim());
         currentCookie = [];
         
@@ -127,7 +127,7 @@ class CookieStore {
       currentCookie.push(char);
     }
     
-    // 添加最后一个Cookie
+    // 添加最后一个Cookie（避免遗漏）
     if (currentCookie.length > 0) {
       cookies.push(currentCookie.join('').trim());
     }
@@ -143,6 +143,7 @@ class CookieStore {
       const [nameValue] = parts;
       if (!nameValue) return null;
 
+      // 处理值中包含等号的情况（如 value=abc=123）
       const [name, ...valueParts] = nameValue.split('=');
       const value = valueParts.join('=').replace(/^"/, '').replace(/"$/, ''); // 移除可能的引号
 
@@ -155,7 +156,7 @@ class CookieStore {
         secure: false     // 默认非 Secure
       };
 
-      // 解析 Cookie 属性
+      // 解析 Cookie 扩展属性（domain/path/expires等）
       parts.slice(1).forEach(part => {
         const [key, val] = part.split('=').map(p => p.toLowerCase());
         switch (key) {
@@ -196,12 +197,13 @@ class CookieStore {
       .join('; ');
   }
 
-  /** 设置指定域名的 Cookie */
+  /** 设置指定域名的 Cookie（删除原 parseCookieForDomain 调用，直接调用 parseCookie） */
   setCookieByDomain(domain: string, cookieStr: string): void {
     this.cleanExpired();
-    const cookie = this.parseCookieForDomain(cookieStr, domain);
+    // 直接拼接 http 协议的 URL 传给 parseCookie，替代原 parseCookieForDomain 方法
+    const cookie = this.parseCookie(cookieStr, `http://${domain}`);
     if (cookie) {
-      // 替换旧 Cookie
+      // 替换旧 Cookie（同名同域同路径）
       this.cookies = this.cookies.filter(c =>
         !(c.name === cookie.name && c.domain === cookie.domain && c.path === cookie.path)
       );
@@ -210,24 +212,21 @@ class CookieStore {
     }
   }
 
-  /** 为指定域名解析手动设置的 Cookie */
-  private parseCookieForDomain(cookieStr: string, domain: string): Cookie | null {
-    return this.parseCookie(cookieStr, `http://${domain}`);
-  }
-
-  /** 检查域名匹配 */
+  /** 检查域名匹配（支持子域名匹配） */
   private isDomainMatch(cookieDomain: string, targetDomain: string): boolean {
     const normalizedCookie = cookieDomain.startsWith('.') ? cookieDomain.slice(1) : cookieDomain;
     const normalizedTarget = targetDomain.startsWith('.') ? targetDomain.slice(1) : targetDomain;
+    // 匹配规则：目标域名是Cookie域名的后缀，或完全相等
     return normalizedTarget.endsWith(normalizedCookie) || normalizedTarget === normalizedCookie;
   }
 
-  /** 获取请求对应的 Cookie */
+  /** 获取请求对应的 Cookie（自动匹配协议、域名、路径） */
   getForRequest(url: string): string {
     this.cleanExpired();
     const { protocol, hostname, pathname } = parseUrl(url);
     return this.cookies
       .filter(c => {
+        // 过滤条件：未过期 + 协议匹配（secure仅HTTPS） + 域名匹配 + 路径匹配
         if (c.expires && c.expires <= new Date()) return false;
         if (c.secure && protocol !== 'https:') return false;
         if (!this.isDomainMatch(c.domain, hostname)) return false;
@@ -240,7 +239,10 @@ class CookieStore {
 }
 
 /** 
- * 解析 URL
+ * 解析 URL（提取协议、主机名、路径）
+ * @param url - 待解析的URL字符串
+ * @returns 包含协议、主机名、路径的对象
+ * @throws {Error} 当URL格式无效或无法解析主机名时抛出错误
  */
 function parseUrl(url: string): { protocol: string; hostname: string; pathname: string } {
   const urlRegex = /^([a-zA-Z][a-zA-Z0-9+.-]*:)?\/{0,2}([^/?#]+)?([^?#]*)?/;
@@ -249,21 +251,21 @@ function parseUrl(url: string): { protocol: string; hostname: string; pathname: 
   if (!match) throw new Error('Invalid URL format');
   if (!match[2]) throw new Error('Failed to resolve hostname');
 
-  // 协议：默认 http:
+  // 处理协议：默认http，确保结尾带冒号
   let protocol = match[1] || 'http:';
   if (!protocol.endsWith(':')) protocol += ':';
 
-  // 主机名：移除用户名密码前缀
+  // 处理主机名：移除可能的用户名密码前缀（如 user:pass@hostname）
   let hostname = match[2].split('@').pop() || '';
 
-  // 路径：默认 /
+  // 处理路径：默认根路径，确保以/开头
   let pathname = match[3] || '/';
   if (!pathname.startsWith('/')) pathname = `/${pathname}`;
 
   return { protocol, hostname, pathname };
 }
 
-// 创建 CookieStore 实例
+// 创建 CookieStore 单例实例
 const cookieStore = new CookieStore();
 
 // 保存原生 wx.request 引用
@@ -275,6 +277,7 @@ wx.request = function <
 >(option: WechatMiniprogram.RequestOption<T>): WechatMiniprogram.RequestTask {
   const { url, header = {}, success, ...rest } = option;
 
+  // 校验 URL 必填
   if (!url) {
     const errMsg = 'request: fail url is required';
     option.fail?.({ errMsg });
@@ -282,18 +285,20 @@ wx.request = function <
     return { abort: () => {} } as WechatMiniprogram.RequestTask;
   }
 
-  // 构建请求头，自动添加 Cookie
+  // 构建请求头，自动添加匹配的 Cookie
   const requestCookies = cookieStore.getForRequest(url);
   const requestHeader = {
     ...header,
     ...(requestCookies ? { Cookie: requestCookies } : {})
   };
 
+  // 处理响应，自动解析 Set-Cookie 并更新存储
   const handleSuccess = (res: WechatMiniprogram.RequestSuccessCallbackResult<T>) => {
     cookieStore.setFromResponse(res.header, url);
     success?.call(this, res);
   };
 
+  // 调用原生请求方法并返回任务对象
   return originalWxRequest.call(wx, {
     ...rest,
     url,
@@ -304,17 +309,21 @@ wx.request = function <
   });
 };
 
-interface BrowserLikeSite {
-  cookie: string;
-}
-
-class SiteImpl implements BrowserLikeSite {
+/**
+ * 按域名操作 Cookie 的便捷类
+ */
+class cookies {
   private domain: string;
 
   constructor(domain: string) {
     this.domain = domain;
   }
 
+  /**
+   * 通过赋值和读取此值设置/获取指定域的非 HttpOnly Cookie
+   * - 读取：返回该域名下所有非 HttpOnly Cookie 的字符串（格式：name1=value1; name2=value2）
+   * - 赋值：传入 Cookie 字符串（支持单个或多个，如 "name=value; domain=xxx"）更新存储
+   */
   get cookie(): string {
     return cookieStore.getCookiesByDomain(this.domain);
   }
@@ -325,36 +334,61 @@ class SiteImpl implements BrowserLikeSite {
 }
 
 /**
- * 获取指定 url 对应的 cookie
- * @param url 
+ * 获取指定URL对应的cookies操作实例
+ * @param url - 目标URL
+ * @returns 按该URL域名操作Cookie的cookies实例
+ * @throws {Error} 当无法从URL解析域名时抛出错误
  */
-export function cookies(url: string): BrowserLikeSite {
+export function getCookies(url: string): cookies {
   try {
     const { hostname } = parseUrl(url);
-    return new SiteImpl(hostname);
+    return new cookies(hostname);
   } catch (e) {
     throw new Error('Failed to resolve domain from url');
   }
 }
 
 /**
- * 从 Cookie 字符串中提取指定键的值
+ * 将 Cookie 字符串解析为对象
+ * 支持逗号和分号分隔的 Cookie 格式，正确处理值中包含逗号或分号的情况
  * @param cookieStr - 完整的 Cookie 字符串
- * @param key - 要提取的 Cookie 键名
- * @returns 对应的值
+ * @returns 解析后的 Cookie 对象 { [key: string]: string }
  */
-export function getCookieValueFromStr(cookieStr: string, key: string): string | null {
-  // 同时支持分号和逗号分隔的Cookie
-  const separators = /[,;]\s*/;
-  const cookiePairs = cookieStr.split(separators);
-  
+export function cookieStrToObj(cookieStr: string): { [key: string]: string } {
+  const cookieObj: { [key: string]: string } = {};
+  if (!cookieStr.trim()) return cookieObj;
+
+  // 复用 CookieStore 的 splitCookieHeader 逻辑来正确分割 Cookie
+  const cookiePairs = cookieStore.splitCookieHeader(cookieStr);
+
   for (const pair of cookiePairs) {
+    // 处理键值对（支持值中包含等号）
     const [cookieKey, ...cookieValueParts] = pair.split('=');
-    if (cookieKey.trim() === key) {
-      return cookieValueParts.join('=') || '';
-    }
+    if (!cookieKey) continue;
+
+    // 清理键的前后空格
+    const key = cookieKey.trim();
+    // 连接值的各个部分（处理值中包含等号的情况）
+    const value = cookieValueParts.join('=').trim();
+
+    cookieObj[key] = value;
   }
-  
-  return null;
+
+  return cookieObj;
 }
-    
+
+/**
+ * 将 Cookie 对象转换为标准 Cookie 字符串
+ * 使用分号分隔各个键值对，符合 Cookie 标准格式
+ * @param cookieObj - 要转换的 Cookie 对象
+ * @returns 转换后的 Cookie 字符串
+ */
+export function cookieObjToStr(cookieObj: { [key: string]: string }): string {
+  return Object.entries(cookieObj)
+    .map(([key, value]) => {
+      // 对值进行简单转义，避免包含分号等特殊字符
+      const escapedValue = String(value).replace(/;/g, encodeURIComponent);
+      return `${key}=${escapedValue}`;
+    })
+    .join('; ');
+}

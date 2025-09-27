@@ -1,5 +1,7 @@
 import proxyRequest from '../utils/proxyRequest';
+import {getCookies, cookieStrToObj} from '../utils/cookie'
 
+// cookieStrToObj(getCookies('test').cookie)['Token']
 /**
  * 通用请求函数：自动添加 Authorization 头 + 支持代理开关
  * @param options 请求配置：包含 useProxy 开关 + wx.request 所有原生参数
