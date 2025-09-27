@@ -1,58 +1,107 @@
 import proxyRequest from '../utils/proxyRequest';
-import {getCookies, cookieStrToObj} from '../utils/cookie'
+import { getCookies, cookieStrToObj, withCookie } from '../utils/cookie'
 
-// cookieStrToObj(getCookies('test').cookie)['Token']
 /**
- * 通用请求函数：自动添加 Authorization 头 + 支持代理开关
- * @param options 请求配置：包含 useProxy 开关 + wx.request 所有原生参数
- * @returns RequestTask 对象（兼容原生，支持 abort 取消）
+ * 自定义请求函数参数
  */
-function request<T = any>(
-  options: WechatMiniprogram.RequestOption<T> & {
-    useProxy?: boolean; // 新增：是否使用代理（默认 false，直接调用 wx.request）
+interface RequestOptions {
+  /** 请求 url */
+  url: string
+  /** 请求的参数 */
+  data?: string | WechatMiniprogram.IAnyObject | ArrayBuffer
+  /** 设置请求的 header。
+   *
+   * `content-type` 默认为 `application/json` */
+  header?: WechatMiniprogram.IAnyObject
+  /** 超时时间，单位为毫秒 */
+  timeout?: number
+  /** HTTP 请求方法 */
+  method?:
+  | 'OPTIONS'
+  | 'GET'
+  | 'HEAD'
+  | 'POST'
+  | 'PUT'
+  | 'DELETE'
+  | 'TRACE'
+  | 'CONNECT'
+  /** 返回的数据格式
+   *
+   * 可选值：
+   * - 'json': 返回的数据为 JSON，返回后会对返回的数据进行一次 JSON.parse;
+   * - '其他': 不对返回的内容进行 JSON.parse; */
+  dataType?: 'json' | '其他'
+  /** 响应的数据类型
+   *
+   * 可选值：
+   * - 'text': 响应的数据为文本;
+   * - 'arraybuffer': 响应的数据为 ArrayBuffer;
+   *
+   * 最低基础库： `1.7.0` */
+  responseType?: 'text' | 'arraybuffer'
+  /**
+   * 是否使用代理，默认值为 `false`
+   * 
+   * - `false`: 使用 `wx.request()` 进行请求
+   * - `true`: 使用 `proxyRequest()` 进行请求，可绕过 referer 限制
+   */
+  useProxy?: boolean
+}
+
+/**
+ * 获取指定域的 Token
+ * @param url - 请求的 URL
+ * @returns Token 值（可能为 undefined ）
+ */
+function getAuthToken(url: string): string | undefined {
+  try {
+    const cookies = getCookies(url).cookie;
+    const cookieObj = cookieStrToObj(cookies);
+    return cookieObj.TOKEN;
+  } catch (error) {
+    console.warn('获取 Token 异常:', error);
+    return undefined;
   }
-): void {
-  // 解构参数：分离自定义的 useProxy 与原生请求参数
+}
+
+/**
+ * 请求函数（自动添加 Authorization 头）
+ * @param options 请求配置
+ * @returns Promise 对象，包含请求结果
+ */
+export async function request<T extends string | WechatMiniprogram.IAnyObject | ArrayBuffer =
+  | string
+  | WechatMiniprogram.IAnyObject
+  | ArrayBuffer>(
+    options: RequestOptions
+  ): Promise<WechatMiniprogram.RequestSuccessCallbackResult<T>> {
   const { useProxy = false, ...nativeRequestOptions } = options;
 
-  // 1. 自动添加 Authorization 头：优先使用用户传入的头，无则补充默认值
-  const requestHeader = {
-    ...nativeRequestOptions.header, // 保留用户自定义请求头
-    // 从本地存储获取 Token（实际项目可根据 Token 存储位置调整）
-    Authorization: nativeRequestOptions.header?.Authorization || `Bearer ${getAuthToken()}`
+  // 构建请求头
+  const requestHeader: WechatMiniprogram.IAnyObject = {
+    ...nativeRequestOptions.header,
   };
 
-  // 2. 组装完整请求参数：合并头信息与原生参数
-  const finalRequestOptions: WechatMiniprogram.RequestOption<T> = {
-    ...nativeRequestOptions,
-    header: requestHeader
-  };
-
-  // 3. 根据 useProxy 选择请求方式
-  if (useProxy) {
-    // 启用代理：调用已实现的 proxyRequest 函数（通过云函数转发）
-    return proxyRequest(finalRequestOptions);
-  } else {
-    // 不启用代理：直接调用原生 wx.request
-    wx.request(finalRequestOptions);
-    return;
+  // 自动添加 Authorization 头（仅当存在 Token 且未手动指定时）
+  const token = getAuthToken(nativeRequestOptions.url);
+  if (token && !nativeRequestOptions.header?.Authorization) {
+    requestHeader.Authorization = `Bearer ${token}`;
   }
+
+  return new Promise((resolve, reject) => {
+    const finalRequestOptions: WechatMiniprogram.RequestOption<T> = {
+      ...nativeRequestOptions,
+      header: requestHeader,
+      success: (res) => resolve(res),
+      fail: (res) => reject(res)
+    };
+
+    if (useProxy) {
+      withCookie<WechatMiniprogram.RequestOption<T>, WechatMiniprogram.RequestSuccessCallbackResult<T>>(proxyRequest)(finalRequestOptions);
+    } else {
+      withCookie<WechatMiniprogram.RequestOption<T>, WechatMiniprogram.RequestSuccessCallbackResult<T>>(wx.request)(finalRequestOptions);
+    }
+  });
 }
 
-/**
- * 辅助函数：获取认证 Token
- * 从本地存储读取 Token（实际项目可根据 Token 存储逻辑调整）
- * @returns 认证 Token（无则返回空字符串）
- */
-function getAuthToken(): string {
-  try {
-    // 示例：从 wx.getStorageSync 读取 Token（可替换为其他存储方式）
-    return wx.getStorageSync('user_auth_token') || '';
-  } catch (error) {
-    console.error('获取 Token 失败：', error);
-    return '';
-  }
-}
-
-// 导出通用请求函数：供项目各模块调用
 export default request;
