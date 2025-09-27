@@ -1,0 +1,10 @@
+<!--index.wxml-->
+<scroll-view class="scrollarea" scroll-y type="list">
+  <view class="container">
+  <image id="code-page" src="https://cas.hfut.edu.cn/cas/vercode?time={{getTime()}}"/>
+  <text>当前输入的验证码： {{varCode}} </text>
+  <input bindinput="varCodeInput" style="border: solid 1px black;" />
+  <button type="primary" bind:tap="login">登录</button>
+  <text>登录结果：{{testData}}</text>
+  </view>
+</scroll-view>
