@@ -46,6 +46,10 @@ interface RequestOptions {
    * - `true`: 使用 `proxyRequest()` 进行请求，可绕过 referer 限制
    */
   useProxy?: boolean
+  /**
+   * 是否自动重定向，默认值为 `manual`
+   */
+  redirect?: 'follow' | 'manual'
 }
 
 /**

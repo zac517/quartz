@@ -1,6 +1,5 @@
 import { request } from '../request'
-
-const studentId = '';
+import {studentId} from '../storage'
 
 // 学期 id 是通过 HTML 返回的，这里尝试用一个函数计算出合工大的学期 id
 /**
@@ -26,10 +25,25 @@ function getSemesterId(date: Date): number {
 }
 
 /**
- * 获取学生 id，通过 302 响应的返回值
+ * 获取学生 id
+ * 
+ * 通过 302 响应的返回值
  */
-function getStudentId(): number {
-  return 0;
+async function getStudentId() {
+  if (studentId.value) return studentId.value;
+  else {
+    const result = await request({
+      url: 'https://jxglstu.hfut.edu.cn/eams5-student/for-std/course-table',
+    })
+
+    // 提取学生 id
+    const url = result.header.Location;
+    const parts = url.split('/').filter((part: string) => part);
+    const id = Number(parts[parts.length - 1]);
+
+    studentId.value = id;
+    return id;
+  }
 }
 
 /**
@@ -37,12 +51,13 @@ function getStudentId(): number {
  * 需要 SESSON
  */
 export async function getTimeTable() {
+  const dataId = await getStudentId();
   return await request({
     url: 'https://jxglstu.hfut.edu.cn/eams5-student/for-std/course-table/get-data',
     data: {
       bizTypeId: 23,
       semesterId: getSemesterId(new Date()),
-      dataId: studentId
+      dataId,
     },
   })
 }

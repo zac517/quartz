@@ -12,8 +12,7 @@ interface CloudFunctionInnerResult {
 }
 
 /**
- * 代理请求函数，通过云函数转发请求以绕过referer限制
- * 响应格式与wx.request严格对齐，包括数据解析和头信息结构
+ * 代理请求函数，通过云函数转发请求以绕过 referer 限制
  */
 function proxyRequest<
   T extends string | WechatMiniprogram.IAnyObject | ArrayBuffer =
@@ -21,7 +20,10 @@ function proxyRequest<
   | WechatMiniprogram.IAnyObject
   | ArrayBuffer
 >(
-  option: WechatMiniprogram.RequestOption<T>
+  option: WechatMiniprogram.RequestOption<T> & {
+    /** 重定向处理模式：'follow' 自动跟随，'manual' 手动处理 */
+    redirect?: 'follow' | 'manual';
+  }
 ): void {
   const {
     url,
@@ -31,6 +33,7 @@ function proxyRequest<
     method = 'GET',
     dataType = 'json',
     responseType = 'text',
+    redirect = 'manual',
     success,
     fail,
     complete
@@ -56,7 +59,8 @@ function proxyRequest<
     timeout,
     requestData: data,
     requestHeaders: requestHeader,
-    responseType
+    responseType,
+    redirect
   };
 
   wx.cloud.callFunction({
@@ -81,7 +85,7 @@ function proxyRequest<
             responseData = innerResult.data as unknown as T;
           }
         } 
-        // 处理文本及JSON数据
+        // 处理文本及 JSON 数据
         else {
           const rawText = innerResult.data || '';
 

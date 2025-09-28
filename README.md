@@ -43,3 +43,6 @@ SESSION
   weekIndex: "",
 }
 ```
+
+
+要先获取TGC 换 SESSION 换 其他数据

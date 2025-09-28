@@ -91,7 +91,8 @@ class CookieStore {
   }
 
   /**
-   * 分割多个 Cookie 的头部字符串
+   * 分割 Cookie 头部字符串为单个 Cookie 数组
+   * 兼容分号(;)和逗号(,)两种分隔符，忽略引号内的分隔符
    * @param header - 需要分割的 Cookie 头部字符串
    * @returns 分割后的单个 Cookie 字符串数组
    */
@@ -103,13 +104,15 @@ class CookieStore {
     for (let i = 0; i < header.length; i++) {
       const char = header[i];
 
+      // 处理双引号内内容（引号内的分隔符不生效）
       if (char === '"') {
         inQuotes = !inQuotes;
         currentCookie.push(char);
         continue;
       }
 
-      if (char === ',' && !inQuotes) {
+      // 遇到分号或逗号且不在引号内时，分割为新 Cookie
+      if ((char === ';' || char === ',') && !inQuotes) {
         cookies.push(currentCookie.join('').trim());
         currentCookie = [];
         continue;
@@ -118,6 +121,7 @@ class CookieStore {
       currentCookie.push(char);
     }
 
+    // 添加最后一个 Cookie
     if (currentCookie.length > 0) {
       cookies.push(currentCookie.join('').trim());
     }
@@ -296,25 +300,28 @@ export function getCookies(url: string): cookies {
 }
 
 /**
- * 将 Cookie 字符串解析为对象
- * 支持逗号和分号分隔的 Cookie 格式
- * @param cookieStr - 完整的 Cookie 字符串
- * @returns 解析后的 Cookie 对象 { [key: string]: string }
+ * 将 Cookie 字符串转为键值对对象
+ * @param cookieStr - 原始 Cookie 字符串（多个 Cookie 用 ; 分隔）
+ * @returns 解析后的 Cookie 键值对对象
  */
 export function cookieStrToObj(cookieStr: string): { [key: string]: string } {
   const cookieObj: { [key: string]: string } = {};
-  if (!cookieStr.trim()) return cookieObj;
+  if (!cookieStr?.trim()) return cookieObj;
 
-  const cookiePairs = cookieStore.splitCookieHeader(cookieStr);
+  // 分割并过滤有效 Cookie 键值对
+  const validPairs = cookieStore.splitCookieHeader(cookieStr)
+    .filter(pair => pair?.trim())
+    .map(pair => pair.trim());
 
-  for (const pair of cookiePairs) {
-    // 处理键值对
-    const [cookieKey, ...cookieValueParts] = pair.split('=');
-    if (!cookieKey) continue;
-    const key = cookieKey.trim();
-    const value = cookieValueParts.join('=').trim();
-    cookieObj[key] = value;
-  }
+  // 解析键值对并存储
+  validPairs.forEach(pair => {
+    const equalIndex = pair.indexOf('=');
+    if (equalIndex <= 0) return;
+
+    const key = pair.slice(0, equalIndex).trim();
+    const value = pair.slice(equalIndex + 1).trim();
+    if (key) cookieObj[key] = value;
+  });
 
   return cookieObj;
 }
