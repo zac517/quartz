@@ -2,6 +2,7 @@
 
 import CryptoJS from 'crypto-js'
 import {request} from '../../api/request'
+import {getTimeTable} from '../../api/jxglstu/course_table'
 
 Component({
   data: {
@@ -28,27 +29,28 @@ Component({
     },
 
     async test() {
-      const result = await request({
-        useProxy: true,
-        url: 'https://cas.hfut.edu.cn/cas/checkInitParams',
-        data: {
-          _: this.getTime(),
-        },
-      })
 
-        console.log(result)
-        console.log(result.profile)
+      // const result = await request({
+      //   useProxy: true,
+      //   url: 'https://cas.hfut.edu.cn/cas/checkInitParams',
+      //   data: {
+      //     _: this.getTime(),
+      //   },
+      // })
+      
+      //   console.log(result)
+      //   console.log(result.profile)
 
-        const res = await request({
+      //   const res = await request({
           
-          url: 'https://cas.hfut.edu.cn/cas/checkInitParams',
-          data: {
-            _: this.getTime(),
-          },
-        })
+      //     url: 'https://cas.hfut.edu.cn/cas/checkInitParams',
+      //     data: {
+      //       _: this.getTime(),
+      //     },
+      //   })
   
-          console.log(res)
-          console.log(res.profile)
+      //     console.log(res)
+      //     console.log(res.profile)
     },
     // login() {
     //   wx.request({
