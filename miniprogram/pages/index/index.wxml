@@ -1,14 +1,3 @@
 <!--index.wxml-->
 <scroll-view class="scrollarea" scroll-y type="list">
-  <view class="container">
-  <image id="code-page" src="{{imageUrl}}"/>
-  <text>验证码： {{varCode}} </text>
-  <input model:value="{{varCode}}" style="border: solid 1px black;" />
-  <text>账号： {{username}} </text>
-  <input model:value="{{username}}" style="border: solid 1px black;" />
-  <text>密码： {{password}} </text>
-  <input model:value="{{password}}" style="border: solid 1px black;" />
-  <button type="primary" bind:tap="test">登录</button>
-  <text>登录结果：{{testData}}</text>
-  </view>
 </scroll-view>

@@ -1,0 +1,113 @@
+<!--pages/timetable/timetable.wxml-->
+<view class="container">
+  <view class="header" style="height: {{ navH }}px; padding-top:  {{ navH - 42 }}px;">
+    <text class="title">头部</text>
+  </view>
+
+  <view class="timetable">
+    <view class="time-column">
+      <view class="time-column-header">10月</view>
+      <scroll-view class="time-column-content" scroll-y bindscroll="onColumnScroll" scrollTop="{{columnScrollTop}}">
+        <view wx:for="{{timeSlots.morning}}" wx:key="index" class="time-column-child">
+          <view class="column-center">
+            <view class="time-number">{{ index + 1 }}</view>
+            <view class="time-slot">{{ item.timeStart }}</view>
+            <view class="time-slot">{{ item.timeEnd }}</view>
+          </view>
+        </view>
+        <view class="time-column-divid">
+          <view class="column-center">
+            <view class="time-number"></view>
+          </view>
+        </view>
+        <view wx:for="{{timeSlots.afternoon}}" wx:key="index" class="time-column-child">
+          <view class="column-center">
+            <view class="time-number">{{ index + 5 }}</view>
+            <view class="time-slot">{{ item.timeStart }}</view>
+            <view class="time-slot">{{ item.timeEnd }}</view>
+          </view>
+        </view>
+        <view class="time-column-divid">
+          <view class="column-center">
+            <view class="time-number"></view>
+          </view>
+        </view>
+        <view wx:for="{{timeSlots.evening}}" wx:key="index" class="time-column-child">
+          <view class="column-center">
+            <view class="time-number">{{ index + 9 }}</view>
+            <view class="time-slot">{{ item.timeStart }}</view>
+            <view class="time-slot">{{ item.timeEnd }}</view>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+
+    <swiper class="grid-container" duration="300">
+      <swiper-item wx:for="{{timeSlots}}" wx:key="index" class="grid-container-item">
+        <view class="weekdays">
+          <view class="weekday">一</view>
+          <view class="weekday">二</view>
+          <view class="weekday">三</view>
+          <view class="weekday">四</view>
+          <view class="weekday">五</view>
+          <view class="weekday">六</view>
+          <view class="weekday">日</view>
+        </view>
+        <scroll-view class="courses-scroll" scroll-y bindscroll="onContentScroll" scrollTop="{{ contentScrollTop }}">
+          <view class="courses-grid">
+            <view class="courses-grid-background">
+              <view wx:for="{{timeSlots.morning}}" wx:key="index" class="time-column-child">
+                <view class="column-center">
+                </view>
+              </view>
+              <view class="time-column-divid">
+                <view class="column-center">
+                  <view class="time-number">午休</view>
+                </view>
+              </view>
+              <view wx:for="{{timeSlots.afternoon}}" wx:key="index" class="time-column-child">
+                <view class="column-center">
+                </view>
+              </view>
+              <view class="time-column-divid">
+                <view class="column-center">
+                  <view class="time-number">晚休</view>
+                </view>
+              </view>
+              <view wx:for="{{timeSlots.evening}}" wx:key="index" class="time-column-child">
+                <view class="column-center">
+                </view>
+              </view>
+            </view>
+            <view class="course-block" style="--row-start:1; --row-end:3; --col:1; background-color:#4cd964;">
+              <view class="course-name">高等数学</view>
+              <view class="course-info">一教101</view>
+              <view class="course-teacher">李老师</view>
+            </view>
+
+            <view class="course-block" style="--row-start:3; --row-end:5; --col:2; background-color:#ff9500;">
+              <view class="course-name">大学物理</view>
+              <view class="course-info">二教202</view>
+              <view class="course-teacher">王老师</view>
+            </view>
+
+            <view class="course-block" style="--row-start:6; --row-end:8; --col:3; background-color:#5856d6;">
+              <view class="course-name">计算机基础</view>
+              <view class="course-info">三教303</view>
+              <view class="course-teacher">张老师</view>
+            </view>
+
+            <view class="course-block" style="--row-start:11; --row-end:13; --col:4; background-color:#af52de;">
+              <view class="course-name">英语</view>
+              <view class="course-info">四教404</view>
+              <view class="course-teacher">刘老师</view>
+            </view>
+          </view>
+        </scroll-view>
+
+      </swiper-item>
+    </swiper>
+
+
+  </view>
+</view>
