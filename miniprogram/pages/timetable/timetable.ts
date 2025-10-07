@@ -29,6 +29,7 @@ Page({
     isScroll: false,
     scrollTimeout: 0,
     scrollTop: 0,
+    currentIndex: 0,
   },
 
   async test() {
@@ -55,30 +56,43 @@ Page({
   },
 
   onScroll(e: WechatMiniprogram.ScrollViewScroll) {
-    this.setData({
-      isScroll: true,
-    })
-    this.data.scrollTop = e.detail.scrollTop;
-    clearTimeout(this.data.scrollTimeout);
-
-    this.data.scrollTimeout = setTimeout(() => {
+    if (e.detail.deltaY) {
+      clearTimeout(this.data.scrollTimeout);
       this.setData({
-        isScroll: false,
-        scrollTop: this.data.scrollTop,
+        isScroll: true,
       })
-    }, 100);
+      this.data.scrollTop = e.detail.scrollTop;
+
+      this.data.scrollTimeout = setTimeout(() => {
+        this.setData({
+          scrollTop: this.data.scrollTop,
+        })
+        setTimeout(() => {
+          this.setData({
+            isScroll: false,
+          })
+        }, 50);
+      }, 150);
+    }
+  },
+
+  // 监听 swiper 切换事件
+  onSwiperChange(e: WechatMiniprogram.SwiperChange) {
+    const currentIndex = e.detail.current; // 获取当前索引
+    this.setData({
+      currentIndex,
+    });
   },
 
   onTouchStart() {
     this.setData({
-      isTouch: true,
+      isTouch: true
     })
   },
 
   onTouchEnd() {
     this.setData({
-      isTouch: false,
+      isTouch: false
     })
   },
-
 })

@@ -68,7 +68,7 @@
     </view>
 
     <swiper class="grid-container {{(isTouch && !isScroll) || isMove ? 'grid-container-scroll' : ''}} " duration="300" bindtransition="onMoveStart" bindanimationfinish="onMoveEnd">
-      <swiper-item wx:for="{{[1,2,3,4,5,6,7,8,9]}}" wx:key="index" class="grid-container-item">
+      <swiper-item wx:for="{{[1,2,3]}}" wx:key="index" class="grid-container-item" >
         <view class="table-header">
           <view wx:if="{{!((isTouch && !isScroll) || isMove)}}" class="time-column-header">10月</view>
           <view class="weekdays">
@@ -82,10 +82,12 @@
           </view>
         </view>
 
-        <scroll-view style="height: 100%;" scroll-y scroll-top="{{scrollTop}}" bindscroll="onScroll">
+        <scroll-view scroll-y class="courses-scroll-view"
+        scroll-top="{{scrollTop}}" bindscroll="onScroll"
+        style="height: 100%;pointer-events: {{isMove ? 'none' : 'all'}};"
+        throttle="{{false}}"
+        >
           <view class="courses-scroll">
-
-
             <view class="courses-grid-background">
               <view wx:for="{{timeSlots.morning}}" wx:key="index" class="time-column-child">
                 <view class="column-center">
@@ -171,9 +173,7 @@
               </view>
             </view>
           </view>
-
         </scroll-view>
-
       </swiper-item>
     </swiper>
 

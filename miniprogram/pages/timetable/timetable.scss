@@ -35,6 +35,8 @@ $grid-height: calc(9.13% - 4px);
   flex-direction: column;
   flex-shrink: 0;
   position: absolute;
+  z-index: 100;
+  pointer-events: none;
 }
 
 .time-column-header {
