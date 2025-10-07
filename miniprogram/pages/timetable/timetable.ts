@@ -24,11 +24,11 @@ Page({
         { timeStart: '21:00', timeEnd: '21:50' },
       ]
     },
-    columnScrollTop: 0,
-    contentScrollTop: 0,
-    isColumnScroll: false,
-    isContentScroll: false,
-    scrollEndTimer: 0,
+    isMove: false,
+    isTouch: false,
+    isScroll: false,
+    scrollTimeout: 0,
+    scrollTop: 0,
   },
 
   async test() {
@@ -42,29 +42,43 @@ Page({
     })
   },
 
-  onColumnScroll(e: WechatMiniprogram.ScrollViewDragging) {
-    if (!this.data.isContentScroll) {
-      this.data.isColumnScroll = true;
-      this.setData({
-        contentScrollTop: e.detail.scrollTop
-      });
-      clearTimeout(this.data.scrollEndTimer);
-
-      this.data.scrollEndTimer = setTimeout(() => {
-        this.data.isColumnScroll = false;
-      }, 300);
-    }
+  onMoveStart() {
+    this.setData({
+      isMove: true
+    })
   },
 
-  onContentScroll(e: WechatMiniprogram.ScrollViewDragging) {
-    if (!this.data.isColumnScroll) {
-      this.data.isContentScroll = true;
-      this.setData({
-        columnScrollTop: e.detail.scrollTop
-      });
+  onMoveEnd() {
+    this.setData({
+      isMove: false
+    })
+  },
 
-      
-    }
+  onScroll(e: WechatMiniprogram.ScrollViewScroll) {
+    this.setData({
+      isScroll: true,
+    })
+    this.data.scrollTop = e.detail.scrollTop;
+    clearTimeout(this.data.scrollTimeout);
+
+    this.data.scrollTimeout = setTimeout(() => {
+      this.setData({
+        isScroll: false,
+        scrollTop: this.data.scrollTop,
+      })
+    }, 100);
+  },
+
+  onTouchStart() {
+    this.setData({
+      isTouch: true,
+    })
+  },
+
+  onTouchEnd() {
+    this.setData({
+      isTouch: false,
+    })
   },
 
 })
