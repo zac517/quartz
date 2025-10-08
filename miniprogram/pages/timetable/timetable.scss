@@ -1,10 +1,14 @@
 /* pages/timetable/timetable.wxss */
-$table-header-height: 40px;
+$table-header-height: 50px;
 $table-column-width: 40px;
-$table-grid-height: calc(12.5% - 5px);
-$table-divid-height: 20px;
+$table-divid-height: 12px;
+
+$table-grid-height: calc(12.5% - #{$table-divid-height} / 4);
+$table-grid-height-big: calc((100% - 2 * #{$table-divid-height}) / 11);
+$table-height: calc(137.5% - #{$table-divid-height} / 4 * 3);
 $background-color: #f5f5f5;
 $border-color: #f0f0f0;
+$font-color: rgba(0, 0, 0, 0.5);
 
 .container {
   background-color: $background-color;
@@ -45,7 +49,8 @@ $border-color: #f0f0f0;
   line-height: $table-header-height;
   flex-shrink: 0;
 
-  font-size: 14px;
+  font-size: 11px;
+  font-weight: 600;
   text-align: center;
   background-color: $background-color;
 }
@@ -58,16 +63,18 @@ $border-color: #f0f0f0;
 
 .column-grid {
   height: $table-grid-height;
-  border-bottom: 1px solid $border-color;
+  border-top: 0.5px solid $border-color;
+  border-bottom: 0.5px solid $border-color;
   background-color: white;
 
   .time-number {
-    font-size: 12px;
+    font-size: 11px;
+    font-weight: 500;
   }
 
   .time-slot {
     font-size: 8px;
-    color: #999;
+    color: $font-color;
   }
 }
 
@@ -79,16 +86,16 @@ $border-color: #f0f0f0;
 .column-divid {
   height: $table-divid-height;
   width: 100%;
-  font-size: 12px;
-  background-color: $border-color;
-  color: #666;
+  font-size: 8px;
+  background-color: $background-color;
+  color: $font-color;
   position: relative;
 }
 
 .table-swiper-move .column-divid {
   width: calc(100% + #{$table-column-width});
   position: relative;
-  left: -40px;
+  left: -$table-column-width;
 }
 
 .column-center {
@@ -103,7 +110,7 @@ $border-color: #f0f0f0;
 
 .table-swiper-move {
   width: calc(100% - #{$table-column-width});
-  margin-left: 40px;
+  margin-left: $table-column-width;
 }
 
 .table-swiper-item {
@@ -121,18 +128,29 @@ $border-color: #f0f0f0;
 .weekday {
   flex-grow: 1;
   text-align: center;
-  line-height: $table-header-height;
   font-size: 14px;
-  color: #666;
+  flex-basis: 10%;
+}
+
+.weekday-day {
+  font-size: 11px;
+  line-height: 11px;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.weekday-date {
+  height: 10px;
+  font-size: 9px;
 }
 
 .table-courses {
   flex-grow: 1;
   display: grid;
-  height: 100%;
+  height: $table-height;
   margin-left: $table-column-width;
   grid-template-columns: repeat(7, 1fr);
-  grid-template-rows: repeat(4, $table-grid-height) 20px repeat(4, $table-grid-height) 20px repeat(3, $table-grid-height);
+  grid-template-rows: repeat(4, $table-grid-height-big) $table-divid-height repeat(4, $table-grid-height-big) $table-divid-height repeat(3, $table-grid-height-big);
   position: relative;
 }
 
@@ -147,7 +165,7 @@ $border-color: #f0f0f0;
   right: 0;
   display: flex;
   width: calc(100% - #{$table-column-width});
-  height: calc(137.5% - 15px);
+  height: $table-height;
   margin-left: $table-column-width;
 }
 
@@ -156,9 +174,18 @@ $border-color: #f0f0f0;
   width: 100%;
 }
 
+.table-swiper-item:last-child .row-grid:last-child {
+  border-right: 1px solid $border-color;
+}
+
+.table-swiper-item:first-child .row-grid:first-child {
+  border-left: 1px solid $border-color;
+}
+
 .row-grid {
   flex-grow: 1;
-  border-left: 1px solid $border-color;
+  border-left: 0.5px solid $border-color;
+  border-right: 0.5px solid $border-color;
 }
 
 .table-swiper .column-divid {
@@ -169,22 +196,35 @@ $border-color: #f0f0f0;
   position: relative;
   grid-row: var(--row-start) / var(--row-end);
   grid-column: var(--col);
-  margin: 2px 2px 3px 3px;
-  border-radius: 6px;
-  padding: 4px;
+  border-radius: 4px;
+  padding: 3px;
   box-sizing: border-box;
   overflow: hidden;
+  margin: 2px;
+   
+  --color1-bg: #E8F0FE;
+  --color2-bg: #E6F4EA;
+  --color3-bg: #FEE0E0; 
+  --color4-bg: #F3E8FF;
+  --color5-bg: #FFF0E0;
+  --color6-bg: #DFF6ED;
+  --color7-bg: #FEE2E2;
+  --color8-bg: #EEF2FF;
+  --color9-bg: #FEF3C7;
+  --color10-bg: #E0F2FE;
 }
 
 .course-name {
-  font-size: 12px;
-  font-weight: bold;
-  margin-bottom: 6px;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  line-height: 15px;
+  font-weight: 400;
 }
 
 .course-info,
 .course-teacher {
-  font-size: 10px;
+  font-size: 9px;
+  color: $font-color;
 }
 
 .table-header {

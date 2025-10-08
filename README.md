@@ -1,4 +1,5 @@
 ## 接口
+
 ### `GET` 获取 SECSSION 
 
  `https://jxglstu.hfut.edu.cn/eams5-student/neusoft-sso/login`
@@ -44,5 +45,6 @@ SESSION
 }
 ```
 
-
-要先获取TGC 换 SESSION 换 其他数据
+## 界面开发记录
+### 课程表界面
+还有改进空间的情景：实现滚动结束前禁止左右滑动。
