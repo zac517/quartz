@@ -5,59 +5,46 @@
   </view>
 
   <view class="timetable">
-    <scroll-view class="timetable-grid-background" scroll-y scroll-top="{{ scrollTop }}">
-      <view wx:for="{{timeSlots.morning}}" wx:key="index" class="time-column-child">
-        <view class="column-center">
-        </view>
-      </view>
-      <view class="time-column-divid">
-        <view class="column-center">
-          <view class="time-number">午休</view>
-        </view>
-      </view>
-      <view wx:for="{{timeSlots.afternoon}}" wx:key="index" class="time-column-child">
-        <view class="column-center">
-        </view>
-      </view>
-      <view class="time-column-divid">
-        <view class="column-center">
-          <view class="time-number">晚休</view>
-        </view>
-      </view>
-      <view wx:for="{{timeSlots.evening}}" wx:key="index" class="time-column-child">
-        <view class="column-center">
-        </view>
-      </view>
-    </scroll-view>
+    <!--课程表背景线条-->
+    <view class="timetable-background">
+      <view class="column-header"></view>
+      <scroll-view class="column-content" scroll-y scroll-top="{{scrollTop}}">
+        <view wx:for="{{timeSlots.morning}}" wx:key="index" class="column-grid"></view>
+        <view class="column-divid"></view>
+        <view wx:for="{{timeSlots.afternoon}}" wx:key="index" class="column-grid"></view>
+        <view class="column-divid"></view>
+        <view wx:for="{{timeSlots.evening}}" wx:key="index" class="column-grid"></view>
+      </scroll-view>
+    </view>
     <!--用于实现效果的额外侧边栏-->
     <view class="time-column {{(isTouch && !isScroll) || isMove ? '' : 'opacity' }}">
-      <view class="time-column-header">10月</view>
-      <scroll-view class="time-column-content" scroll-y scroll-top="{{scrollTop}}">
-        <view wx:for="{{timeSlots.morning}}" wx:key="index" class="time-column-child">
+      <view class="column-header">10月</view>
+      <scroll-view class="column-content" scroll-y scroll-top="{{scrollTop}}">
+        <view wx:for="{{timeSlots.morning}}" wx:key="index" class="column-grid">
           <view class="column-center">
             <view class="time-number">{{ index + 1 }}</view>
             <view class="time-slot">{{ item.timeStart }}</view>
             <view class="time-slot">{{ item.timeEnd }}</view>
           </view>
         </view>
-        <view class="time-column-divid">
+        <view class="column-divid">
           <view class="column-center">
             <view class="time-number"></view>
           </view>
         </view>
-        <view wx:for="{{timeSlots.afternoon}}" wx:key="index" class="time-column-child">
+        <view wx:for="{{timeSlots.afternoon}}" wx:key="index" class="column-grid">
           <view class="column-center">
             <view class="time-number">{{ index + 5 }}</view>
             <view class="time-slot">{{ item.timeStart }}</view>
             <view class="time-slot">{{ item.timeEnd }}</view>
           </view>
         </view>
-        <view class="time-column-divid">
+        <view class="column-divid">
           <view class="column-center">
             <view class="time-number"></view>
           </view>
         </view>
-        <view wx:for="{{timeSlots.evening}}" wx:key="index" class="time-column-child">
+        <view wx:for="{{timeSlots.evening}}" wx:key="index" class="column-grid">
           <view class="column-center">
             <view class="time-number">{{ index + 9 }}</view>
             <view class="time-slot">{{ item.timeStart }}</view>
@@ -67,10 +54,10 @@
       </scroll-view>
     </view>
 
-    <swiper class="grid-container {{(isTouch && !isScroll) || isMove ? 'grid-container-scroll' : ''}} " duration="300" bindtransition="onMoveStart" bindanimationfinish="onMoveEnd">
-      <swiper-item wx:for="{{[1,2,3]}}" wx:key="index" class="grid-container-item" >
+    <!--<swiper class="grid-container {{(isTouch && !isScroll) || isMove ? 'grid-container-scroll' : ''}} " duration="300" bindtransition="onMoveStart" bindanimationfinish="onMoveEnd">
+      <swiper-item wx:for="{{[1,2,3]}}" wx:key="index" class="grid-container-item">
         <view class="table-header">
-          <view wx:if="{{!((isTouch && !isScroll) || isMove)}}" class="time-column-header">10月</view>
+          <view wx:if="{{!((isTouch && !isScroll) || isMove)}}" class="column-header">10月</view>
           <view class="weekdays">
             <view class="weekday">一</view>
             <view class="weekday">二</view>
@@ -82,63 +69,59 @@
           </view>
         </view>
 
-        <scroll-view scroll-y class="courses-scroll-view"
-        scroll-top="{{scrollTop}}" bindscroll="onScroll"
-        style="height: 100%;pointer-events: {{isMove ? 'none' : 'all'}};"
-        throttle="{{false}}"
-        >
+        <scroll-view scroll-y class="courses-scroll-view" scroll-top="{{scrollTop}}" bindscroll="onScroll" style="height: 100%;pointer-events: {{isMove ? 'none' : 'all'}};" throttle="{{false}}">
           <view class="courses-scroll">
             <view class="courses-grid-background">
-              <view wx:for="{{timeSlots.morning}}" wx:key="index" class="time-column-child">
+              <view wx:for="{{timeSlots.morning}}" wx:key="index" class="column-grid">
                 <view class="column-center">
                 </view>
               </view>
-              <view class="time-column-divid">
+              <view class="column-divid">
                 <view class="column-center">
                   <view class="time-number">午休</view>
                 </view>
               </view>
-              <view wx:for="{{timeSlots.afternoon}}" wx:key="index" class="time-column-child">
+              <view wx:for="{{timeSlots.afternoon}}" wx:key="index" class="column-grid">
                 <view class="column-center">
                 </view>
               </view>
-              <view class="time-column-divid">
+              <view class="column-divid">
                 <view class="column-center">
                   <view class="time-number">晚休</view>
                 </view>
               </view>
-              <view wx:for="{{timeSlots.evening}}" wx:key="index" class="time-column-child">
+              <view wx:for="{{timeSlots.evening}}" wx:key="index" class="column-grid">
                 <view class="column-center">
                 </view>
               </view>
             </view>
 
-            <view wx:if="{{!((isTouch && !isScroll) || isMove)}}" class="time-column-content">
-              <view wx:for="{{timeSlots.morning}}" wx:key="index" class="time-column-child">
+            <view wx:if="{{!((isTouch && !isScroll) || isMove)}}" class="column-content">
+              <view wx:for="{{timeSlots.morning}}" wx:key="index" class="column-grid">
                 <view class="column-center">
                   <view class="time-number">{{ index + 1 }}</view>
                   <view class="time-slot">{{ item.timeStart }}</view>
                   <view class="time-slot">{{ item.timeEnd }}</view>
                 </view>
               </view>
-              <view class="time-column-divid">
+              <view class="column-divid">
                 <view class="column-center">
                   <view class="time-number"></view>
                 </view>
               </view>
-              <view wx:for="{{timeSlots.afternoon}}" wx:key="index" class="time-column-child">
+              <view wx:for="{{timeSlots.afternoon}}" wx:key="index" class="column-grid">
                 <view class="column-center">
                   <view class="time-number">{{ index + 5 }}</view>
                   <view class="time-slot">{{ item.timeStart }}</view>
                   <view class="time-slot">{{ item.timeEnd }}</view>
                 </view>
               </view>
-              <view class="time-column-divid">
+              <view class="column-divid">
                 <view class="column-center">
                   <view class="time-number"></view>
                 </view>
               </view>
-              <view wx:for="{{timeSlots.evening}}" wx:key="index" class="time-column-child">
+              <view wx:for="{{timeSlots.evening}}" wx:key="index" class="column-grid">
                 <view class="column-center">
                   <view class="time-number">{{ index + 9 }}</view>
                   <view class="time-slot">{{ item.timeStart }}</view>
@@ -175,7 +158,7 @@
           </view>
         </scroll-view>
       </swiper-item>
-    </swiper>
+    </swiper>-->
 
 
   </view>
