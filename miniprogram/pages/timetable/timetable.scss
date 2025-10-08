@@ -1,72 +1,64 @@
 /* pages/timetable/timetable.wxss */
 $table-header-height: 40px;
+$table-column-width: 40px;
+$table-grid-height: calc(12.5% - 5px);
+$table-divid-height: 20px;
+$background-color: #f5f5f5;
 $border-color: #f0f0f0;
-$grid-height: calc(12.5% - 5px);
 
 .container {
-  background-color: #f5f5f5;
+  background-color: $background-color;
   height: 100vh;
   display: flex;
   flex-direction: column;
   gap: 20px;
+
 }
 
 .header {
-  width: 100%;
   text-align: center;
 }
 
 .title {
-  height: 32px;
+  height: 30px;
   display: inline-block;
-  line-height: 32px;
+  line-height: 30px;
 }
 
 .timetable {
   flex-grow: 1;
-  height: 100%;
+  position: relative;
 }
 
-.timetable-background {
-  height: 100%;
+.table-background {
+  position: absolute;
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-  position: absolute;
-  pointer-events: none;
-}
-
-/* 侧栏部分 */
-.time-column {
   height: 100%;
-  width: 40px;
   display: flex;
   flex-direction: column;
-  flex-shrink: 0;
-  position: absolute;
-  z-index: 100;
   pointer-events: none;
 }
 
 .column-header {
   height: $table-header-height;
+  width: $table-column-width;
   line-height: $table-header-height;
-  text-align: center;
+  flex-shrink: 0;
+
   font-size: 14px;
-  background-color: #f5f5f5;
+  text-align: center;
+  background-color: $background-color;
 }
 
 .column-content {
   width: 100%;
+  text-align: center;
   flex-grow: 1;
-  overflow-y: scroll;
 }
 
 .column-grid {
-  height: calc(12.5% - 5px);
-  text-align: center;
-  border-top: 1px solid $border-color;
+  height: $table-grid-height;
+  border-bottom: 1px solid $border-color;
   background-color: white;
 
   .time-number {
@@ -79,30 +71,42 @@ $grid-height: calc(12.5% - 5px);
   }
 }
 
+.column-wrap {
+  width: $table-column-width;
+  height: 100%;
+}
+
 .column-divid {
-  height: 20px;
-  text-align: center;
+  height: $table-divid-height;
+  width: 100%;
   font-size: 12px;
   background-color: $border-color;
   color: #666;
+  position: relative;
+}
+
+.table-swiper-move .column-divid {
+  width: calc(100% + #{$table-column-width});
+  position: relative;
+  left: -40px;
 }
 
 .column-center {
   top: 50%;
   transform: translateY(-50%);
+  position: relative;
 }
 
-.grid-container {
-  width: 100%;
+.table-swiper {
   height: 100%;
 }
 
-.grid-container-scroll {
-  width: calc(100% - 40px);
+.table-swiper-move {
+  width: calc(100% - #{$table-column-width});
   margin-left: 40px;
 }
 
-.grid-container-item {
+.table-swiper-item {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -122,68 +126,50 @@ $grid-height: calc(12.5% - 5px);
   color: #666;
 }
 
-.courses-scroll {
-  height: 100%;
-  display: flex;
-
-  .column-content {
-    width: 40px;
-    flex-grow: 0;
-    overflow-y: visible;
-    flex-shrink: 0;
-
-    .column-grid {
-      height: $grid-height;
-    }
-  }
-}
-
-.courses-grid {
+.table-courses {
   flex-grow: 1;
   display: grid;
-  width: 100%;
+  height: 100%;
+  margin-left: $table-column-width;
   grid-template-columns: repeat(7, 1fr);
-  grid-template-rows: repeat(4, $grid-height) 20px repeat(4, $grid-height) 20px repeat(3, $grid-height);
-  height: 100%;
+  grid-template-rows: repeat(4, $table-grid-height) 20px repeat(4, $table-grid-height) 20px repeat(3, $table-grid-height);
+  position: relative;
 }
 
-.courses-grid-background {
-  position: absolute;
+.table-swiper-move .table-courses {
+  margin-left: 0px;
   width: 100%;
-  top: 0;
-  height: 100%;
-
-  .column-grid {
-    height: $grid-height;
-  }
 }
 
-
-
-.courses-grid-background::before {
-  content: '';
+.table-background-row {
   position: absolute;
   top: 0;
   right: 0;
-  bottom: 0;
-  background-image:
-    linear-gradient(to right, $border-color 1px, transparent 1px);
-  background-size: calc(100% / 7) 100%;
-  pointer-events: none;
-  width: calc(100% - 40px);
-  height: 100%;
+  display: flex;
+  width: calc(100% - #{$table-column-width});
+  height: calc(137.5% - 15px);
+  margin-left: $table-column-width;
 }
 
-.grid-container-scroll .courses-grid-background {
-  width: calc(100% + 40px);
-  right: 0;
+.table-swiper-move .table-background-row {
+  margin-left: 0px;
+  width: 100%;
+}
+
+.row-grid {
+  flex-grow: 1;
+  border-left: 1px solid $border-color;
+}
+
+.table-swiper .column-divid {
+  z-index: 1;
 }
 
 .course-block {
   position: relative;
   grid-row: var(--row-start) / var(--row-end);
   grid-column: var(--col);
-  margin: 2px 2px 2px 3px;
+  margin: 2px 2px 3px 3px;
   border-radius: 6px;
   padding: 4px;
   box-sizing: border-box;
@@ -203,13 +189,9 @@ $grid-height: calc(12.5% - 5px);
 
 .table-header {
   display: flex;
-
-  .column-header {
-    width: 40px;
-    flex-shrink: 0;
-  }
 }
 
-.opacity {
-  z-index: -999;
+.scroll-view {
+  height: 100%;
+  border-top: 1px solid $border-color;
 }

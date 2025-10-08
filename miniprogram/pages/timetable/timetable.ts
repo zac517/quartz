@@ -27,10 +27,10 @@ Page({
     isMove: false,
     isTouch: false,
     isScroll: false,
-    scrollTimeout: 0,
     scrollTop: 0,
-    currentIndex: 0,
   },
+
+  scrollTimeout: 0,
 
   async test() {
     const result = await getTimeTable();
@@ -44,9 +44,11 @@ Page({
   },
 
   onMoveStart() {
-    this.setData({
-      isMove: true
-    })
+    if (!this.data.isMove) {
+      this.setData({
+        isMove: true
+      })
+    }
   },
 
   onMoveEnd() {
@@ -56,32 +58,25 @@ Page({
   },
 
   onScroll(e: WechatMiniprogram.ScrollViewScroll) {
-    if (e.detail.deltaY) {
-      clearTimeout(this.data.scrollTimeout);
+    if (!this.data.isScroll) {
       this.setData({
         isScroll: true,
       })
-      this.data.scrollTop = e.detail.scrollTop;
-
-      this.data.scrollTimeout = setTimeout(() => {
-        this.setData({
-          scrollTop: this.data.scrollTop,
-        })
-        setTimeout(() => {
-          this.setData({
-            isScroll: false,
-          })
-        }, 50);
-      }, 150);
     }
-  },
 
-  // 监听 swiper 切换事件
-  onSwiperChange(e: WechatMiniprogram.SwiperChange) {
-    const currentIndex = e.detail.current; // 获取当前索引
-    this.setData({
-      currentIndex,
-    });
+    clearTimeout(this.scrollTimeout);
+    this.data.scrollTop = e.detail.scrollTop;
+    this.scrollTimeout = setTimeout(() => {
+      this.setData({
+        scrollTop: this.data.scrollTop,
+      })
+
+      setTimeout(() => {
+        this.setData({
+          isScroll: false,
+        })
+      }, 10)
+    }, 70);
   },
 
   onTouchStart() {
