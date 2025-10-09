@@ -1,0 +1,43 @@
+@import '../fonts/iconfont.wxss';
+
+$primary-color: #1677FF;
+
+.tab-bar {
+  display: flex;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50px;
+  background: white;
+  border-top: 1px solid #eee;
+  text-align: center;
+}
+
+.tab-item {
+  flex: 1;
+  padding: 4px;
+}
+
+/* 图标样式 */
+.tab-icon {
+  font-size: 24px;
+  color: rgba(0, 0, 0, 0.3);
+  font-weight: 100;
+  width: 23px;
+  height: 23px;
+}
+
+/* 选中状态样式 */
+.tab-icon.selected, .tab-text.selected {
+  color: $primary-color;
+}
+
+.icon-list {
+  font-weight: 500;
+}
+
+.tab-text {
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.8);
+}

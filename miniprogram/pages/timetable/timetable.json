@@ -1,4 +1,6 @@
 {
-  "usingComponents": {
-  }
+  "usingComponents": {},
+  "navigationBarTitleText": "课表",
+  "navigationBarBackgroundColor": "#f5f5f5",
+  "navigationBarTextStyle": "black"
 }

@@ -1,7 +1,7 @@
 <!--pages/timetable/timetable.wxml-->
 <view class="container">
-  <view class="header" style="height: {{ navH }}px; padding-top:  {{ navH - 40 }}px;">
-    <text class="title">头部</text>
+  <view class="header">
+    <text class="title"><text class="fa fa-user"></text></text>
   </view>
 
   <view class="timetable">

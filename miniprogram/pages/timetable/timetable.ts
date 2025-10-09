@@ -4,7 +4,6 @@ import { getTimeTable } from "../../api/jxglstu/course_table"
 Page({
 
   data: {
-    navH: 0,
     timeSlots: {
       morning: [
         { timeStart: '08:00', timeEnd: '08:50' },
@@ -130,9 +129,12 @@ Page({
   },
 
   onLoad() {
-    this.setData({
-      navH: wx.getWindowInfo().statusBarHeight + 46
-    })
+  },
+
+  onShow() {
+    if (typeof this.getTabBar === 'function' && this.getTabBar()) {
+      this.getTabBar().setData({ selected: 0 });
+    }
   },
 
   onMoveStart() {

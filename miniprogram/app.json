@@ -6,32 +6,27 @@
     "pages/todo/todo",
     "pages/profile/profile"
   ],
-  "window": {
-    "navigationBarTextStyle": "black",
-    "navigationStyle": "custom"
-  },
   "style": "v2",
   "componentFramework": "glass-easel",
   "sitemapLocation": "sitemap.json",
   "lazyCodeLoading": "requiredComponents",
   "tabBar": {
+    "custom": true, 
     "selectedColor": "#31869B",
     "list": [
       {
-        "current": 0,
         "pagePath": "pages/timetable/timetable",
         "text": "课表"
       },
       {
-        "current": 1,
         "pagePath": "pages/todo/todo",
-        "text": "事项"
+        "text": "日程"
       },
       {
-        "current": 2,
         "pagePath": "pages/profile/profile",
         "text": "我的"
       }
     ]
-  }
+  },
+  "usingComponents": {}
 }

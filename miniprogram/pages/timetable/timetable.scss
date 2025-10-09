@@ -12,11 +12,10 @@ $font-color: rgba(0, 0, 0, 0.5);
 
 .container {
   background-color: $background-color;
-  height: 100vh;
+  height: calc(100vh - 50px);
   display: flex;
   flex-direction: column;
   gap: 20px;
-
 }
 
 .header {
