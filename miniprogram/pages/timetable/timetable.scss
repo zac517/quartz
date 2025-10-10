@@ -1,31 +1,55 @@
 /* pages/timetable/timetable.wxss */
 $table-header-height: 50px;
-$table-column-width: 40px;
-$table-divid-height: 12px;
+$table-column-width: 30px;
+$table-divid-height: 16px;
 
 $table-grid-height: calc(12.5% - #{$table-divid-height} / 4);
 $table-grid-height-big: calc((100% - 2 * #{$table-divid-height}) / 11);
 $table-height: calc(137.5% - #{$table-divid-height} / 4 * 3);
-$background-color: #f5f5f5;
-$border-color: #f0f0f0;
+$border-color: #f5f5f5;
 $font-color: rgba(0, 0, 0, 0.5);
 
 .container {
-  background-color: $background-color;
   height: calc(100vh - 50px);
   display: flex;
   flex-direction: column;
-  gap: 20px;
 }
 
-.header {
-  text-align: center;
+.toolbar {
+  display: flex;
+  height: 50px;
+  padding: 5px 0;
 }
 
-.title {
-  height: 30px;
-  display: inline-block;
-  line-height: 30px;
+.toolbar-child {
+  flex-grow: 1;
+}
+
+.table-info {
+  padding-left: 16px;
+}
+
+.toolbar-buttons {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.table-info-text {
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 10px;
+  margin-top: 2px;
+}
+
+.table-info-weekend {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.toolbar-buttons .icon-menu {
+  height: 40px;
+  line-height: 40px;
+  font-size: 20px;
+  width: 40px;
 }
 
 .timetable {
@@ -45,13 +69,23 @@ $font-color: rgba(0, 0, 0, 0.5);
 .column-header {
   height: $table-header-height;
   width: $table-column-width;
-  line-height: $table-header-height;
   flex-shrink: 0;
 
-  font-size: 11px;
-  font-weight: 600;
   text-align: center;
-  background-color: $background-color;
+  background-color: white;
+  padding: 10px 0;
+
+  .mouth-number {
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 12px;
+    margin-bottom: 6px;
+  }
+
+  .mouth-name {
+    font-size: 8px;
+    line-height: 8px;
+  }
 }
 
 .column-content {
@@ -77,6 +111,10 @@ $font-color: rgba(0, 0, 0, 0.5);
   }
 }
 
+.column-grid:first-child {
+  border-top: none;
+}
+
 .column-wrap {
   width: $table-column-width;
   height: 100%;
@@ -85,8 +123,8 @@ $font-color: rgba(0, 0, 0, 0.5);
 .column-divid {
   height: $table-divid-height;
   width: 100%;
-  font-size: 8px;
-  background-color: $background-color;
+  font-size: 10px;
+  background-color: #f5f5f5;
   color: $font-color;
   position: relative;
 }
@@ -195,11 +233,11 @@ $font-color: rgba(0, 0, 0, 0.5);
   position: relative;
   grid-row: var(--row-start) / var(--row-end);
   grid-column: var(--col);
-  border-radius: 4px;
+  // border-radius: 4px;
   padding: 3px;
   box-sizing: border-box;
   overflow: hidden;
-  margin: 2px;
+  // margin: 2px;
    
   --color1-bg: #E8F0FE;
   --color2-bg: #E6F4EA;

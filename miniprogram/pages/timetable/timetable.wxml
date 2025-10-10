@@ -1,13 +1,26 @@
 <!--pages/timetable/timetable.wxml-->
 <view class="container">
-  <view class="header">
-    <text class="title"><text class="fa fa-user"></text></text>
+  <view class="toolbar">
+    <view class="table-info toolbar-child">
+      <view class="table-info-weekend">第{{ currentIndex + 1 }}周
+        <span class="iconfont icon-unfold"></span>
+      </view>
+      <view class="table-info-text">2025-2026学年 第一学期</view>
+    </view>
+    <view class="toolbar-buttons toolbar-child">
+      <span class="iconfont icon-menu"></span>
+    </view>
   </view>
 
   <view class="timetable">
     <!--下层背景及侧边栏-->
     <view class="table-background">
-      <view class="column-header"> {{ currentIndex + 1 }} 周</view>
+      <view class="column-header">
+        <view class="column-center">
+          <view class="mouth-number">{{ weeks[currentIndex].month }}</view>
+          <view class="mouth-name">{{ weeks[currentIndex].monthName }}</view>
+        </view>
+      </view>
       <scroll-view class="column-content scroll-view" scroll-y scroll-top="{{scrollTop}}">
         <view wx:for="{{timeSlots.morning}}" wx:key="index" class="column-grid">
           <view class="column-wrap">
@@ -45,84 +58,87 @@
 
     <swiper class="table-swiper {{ (isTouch && !isScroll) || isMove ? 'table-swiper-move' : ''}} " duration="300" bindtransition="onMoveStart" bindanimationfinish="onMoveEnd" current="{{currentIndex}}" bindchange="onSwiperChange">
       <swiper-item wx:for="{{weeks}}" wx:key="weekNum" class="table-swiper-item">
-          <!--课程表头部-->
-          <view class="table-header">
-            <view wx:if="{{ (!isTouch || isScroll) && !isMove }}" class="column-header">{{item.weekNum}} 周</view>
-            <view class="weekdays">
-              <view wx:for="{{item.dates}}" wx:key="index" class="weekday">
-                <view class="column-center">
-                  <view class="weekday-day">{{item.day}}</view>
-                  <view class="weekday-date">{{item.date}}</view>
-                </view>
+        <!--课程表头部-->
+        <view class="table-header">
+          <view wx:if="{{ (!isTouch || isScroll) && !isMove }}" class="column-header">
+            <view class="column-center">
+              <view class="mouth-number">{{ item.month }}</view>
+              <view class="mouth-name">{{ item.monthName }}</view>
+            </view>
+          </view>
+          <view class="weekdays">
+            <view wx:for="{{item.dates}}" wx:key="index" class="weekday">
+              <view class="column-center">
+                <view class="weekday-day">{{item.day}}</view>
+                <view class="weekday-date">{{item.date}}</view>
               </view>
             </view>
           </view>
+        </view>
 
-          <!--滚动区域-->
-          <scroll-view scroll-y scroll-top="{{scrollTop}}" style="pointer-events: {{isMove ? 'none' : 'all'}};" throttle="{{false}}" bindscroll="onScroll" class="scroll-view">
-            <!--上层课程表侧栏-->
-            <view class="table-background">
-              <view class="column-content">
-                <view wx:for="{{timeSlots.morning}}" wx:key="index" class="column-grid">
-                  <view wx:if="{{ (!isTouch || isScroll) && !isMove }}" class="column-wrap">
-                    <view class="column-center">
-                      <view class="time-number">{{ index + 1 }}</view>
-                      <view class="time-slot">{{ item.timeStart }}</view>
-                      <view class="time-slot">{{ item.timeEnd }}</view>
-                    </view>
-                  </view>
-                </view>
-                <view class="column-divid">
+        <!--滚动区域-->
+        <scroll-view scroll-y scroll-top="{{scrollTop}}" style="pointer-events: {{isMove ? 'none' : 'all'}};" throttle="{{false}}" bindscroll="onScroll" class="scroll-view">
+          <!--上层课程表侧栏-->
+          <view class="table-background">
+            <view class="column-content">
+              <view wx:for="{{timeSlots.morning}}" wx:key="index" class="column-grid">
+                <view wx:if="{{ (!isTouch || isScroll) && !isMove }}" class="column-wrap">
                   <view class="column-center">
-                    <view class="time-number">午休</view>
-                  </view>
-                </view>
-                <view wx:for="{{timeSlots.afternoon}}" wx:key="index" class="column-grid">
-                  <view wx:if="{{ (!isTouch || isScroll) && !isMove}}" class="column-wrap">
-                    <view class="column-center">
-                      <view class="time-number">{{ index + 5 }}</view>
-                      <view class="time-slot">{{ item.timeStart }}</view>
-                      <view class="time-slot">{{ item.timeEnd }}</view>
-                    </view>
-                  </view>
-                </view>
-                <view class="column-divid">
-                  <view class="column-center">
-                    <view class="time-number">晚休</view>
-                  </view>
-                </view>
-                <view wx:for="{{timeSlots.evening}}" wx:key="index" class="column-grid">
-                  <view wx:if="{{ (!isTouch || isScroll) && !isMove}}" class="column-wrap">
-                    <view class="column-center">
-                      <view class="time-number">{{ index + 9 }}</view>
-                      <view class="time-slot">{{ item.timeStart }}</view>
-                      <view class="time-slot">{{ item.timeEnd }}</view>
-                    </view>
+                    <view class="time-number">{{ index + 1 }}</view>
+                    <view class="time-slot">{{ item.timeStart }}</view>
+                    <view class="time-slot">{{ item.timeEnd }}</view>
                   </view>
                 </view>
               </view>
-              <view class="table-background-row">
-                <view class="row-grid"></view>
-                <view class="row-grid"></view>
-                <view class="row-grid"></view>
-                <view class="row-grid"></view>
-                <view class="row-grid"></view>
-                <view class="row-grid"></view>
-                <view class="row-grid"></view>
+              <view class="column-divid">
+                <view class="column-center">
+                  <view class="time-number">午休</view>
+                </view>
+              </view>
+              <view wx:for="{{timeSlots.afternoon}}" wx:key="index" class="column-grid">
+                <view wx:if="{{ (!isTouch || isScroll) && !isMove}}" class="column-wrap">
+                  <view class="column-center">
+                    <view class="time-number">{{ index + 5 }}</view>
+                    <view class="time-slot">{{ item.timeStart }}</view>
+                    <view class="time-slot">{{ item.timeEnd }}</view>
+                  </view>
+                </view>
+              </view>
+              <view class="column-divid">
+                <view class="column-center">
+                  <view class="time-number">晚休</view>
+                </view>
+              </view>
+              <view wx:for="{{timeSlots.evening}}" wx:key="index" class="column-grid">
+                <view wx:if="{{ (!isTouch || isScroll) && !isMove}}" class="column-wrap">
+                  <view class="column-center">
+                    <view class="time-number">{{ index + 9 }}</view>
+                    <view class="time-slot">{{ item.timeStart }}</view>
+                    <view class="time-slot">{{ item.timeEnd }}</view>
+                  </view>
+                </view>
               </view>
             </view>
-
-            <!--课程表主体-->
-            <view class="table-courses" bind:touchstart="onTouchStart" bind:touchend="onTouchEnd">
-              <view wx:for="{{item.courses}}" wx:key="index" class="course-block"
-                style="--row-start:{{item.rowStart}};--row-end:{{item.rowEnd}};--col:{{item.day}};background:var(--color{{item.colorGroup}}-bg);"
-                >
-                <view class="course-name">{{item.name}}</view>
-                <view class="course-info">{{item.info}}</view>
-                <view class="course-teacher">{{item.teacher}}</view>
-              </view>
+            <view class="table-background-row">
+              <view class="row-grid"></view>
+              <view class="row-grid"></view>
+              <view class="row-grid"></view>
+              <view class="row-grid"></view>
+              <view class="row-grid"></view>
+              <view class="row-grid"></view>
+              <view class="row-grid"></view>
             </view>
-          </scroll-view>
+          </view>
+
+          <!--课程表主体-->
+          <view class="table-courses" bind:touchstart="onTouchStart" bind:touchend="onTouchEnd">
+            <view wx:for="{{item.courses}}" wx:key="index" class="course-block" style="--row-start:{{item.rowStart}};--row-end:{{item.rowEnd}};--col:{{item.day}};background:var(--color{{item.colorGroup}}-bg);">
+              <view class="course-name">{{item.name}}</view>
+              <view class="course-info">{{item.info}}</view>
+              <view class="course-teacher">{{item.teacher}}</view>
+            </view>
+          </view>
+        </scroll-view>
 
       </swiper-item>
     </swiper>

@@ -8,7 +8,7 @@
     data-index="{{index}}"
   >
     <view>
-    <icon class="tab-icon {{ item.className }} {{selected === index ? 'selected' : ''}} "></icon>
+    <view class="tab-icon {{ item.className }} {{selected === index ? 'selected' : ''}} "></view>
     </view>
     <view class="tab-text {{selected === index ? 'selected' : ''}}">
       {{item.text}}

@@ -4,14 +4,16 @@
     "pages/index/index",
     "pages/login/login",
     "pages/todo/todo",
-    "pages/profile/profile"
+    "pages/profile/profile",
+    "pages/guide/guide",
+    "pages/timetable_list/timetable_list"
   ],
   "style": "v2",
   "componentFramework": "glass-easel",
   "sitemapLocation": "sitemap.json",
   "lazyCodeLoading": "requiredComponents",
   "tabBar": {
-    "custom": true, 
+    "custom": true,
     "selectedColor": "#31869B",
     "list": [
       {
@@ -28,5 +30,11 @@
       }
     ]
   },
-  "usingComponents": {}
+  "usingComponents": {},
+  "window": {
+    "navigationStyle": "default",
+    "navigationBarBackgroundColor": "#ffffff",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "错误"
+  }
 }

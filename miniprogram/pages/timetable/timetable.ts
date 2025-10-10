@@ -32,14 +32,16 @@ Page({
       // 第一周
       {
         weekNum: 1,
+        month: 10,
+        monthName: 'OCT',
         dates: [
-          { day: '一', date: '10/6' },
-          { day: '二', date: '10/7' },
-          { day: '三', date: '10/8' },
-          { day: '四', date: '10/9' },
-          { day: '五', date: '10/10' },
-          { day: '六', date: '10/11' },
-          { day: '日', date: '10/12' }
+          { day: '一', date: '6' },
+          { day: '二', date: '7' },
+          { day: '三', date: '8' },
+          { day: '四', date: '9' },
+          { day: '五', date: '10' },
+          { day: '六', date: '11' },
+          { day: '日', date: '12' }
         ],
         courses: [
           // 周一课程
@@ -62,14 +64,16 @@ Page({
       // 第二周
       {
         weekNum: 2,
+        month: 10,
+        monthName: 'OCT',
         dates: [
-          { day: '一', date: '10/13' },
-          { day: '二', date: '10/14' },
-          { day: '三', date: '10/15' },
-          { day: '四', date: '10/16' },
-          { day: '五', date: '10/17' },
-          { day: '六', date: '10/18' },
-          { day: '日', date: '10/19' }
+          { day: '一', date: '13' },
+          { day: '二', date: '14' },
+          { day: '三', date: '15' },
+          { day: '四', date: '16' },
+          { day: '五', date: '17' },
+          { day: '六', date: '18' },
+          { day: '日', date: '19' }
         ],
         courses: [
           // 周一课程
@@ -92,14 +96,16 @@ Page({
       // 第三周
       {
         weekNum: 3,
+        month: 10,
+        monthName: 'OCT',
         dates: [
-          { day: '一', date: '10/20' },
-          { day: '二', date: '10/21' },
-          { day: '三', date: '10/22' },
-          { day: '四', date: '10/23' },
-          { day: '五', date: '10/24' },
-          { day: '六', date: '10/25' },
-          { day: '日', date: '10/26' }
+          { day: '一', date: '20' },
+          { day: '二', date: '21' },
+          { day: '三', date: '22' },
+          { day: '四', date: '23' },
+          { day: '五', date: '24' },
+          { day: '六', date: '25' },
+          { day: '日', date: '26' }
         ],
         courses: [
           // 周二课程
