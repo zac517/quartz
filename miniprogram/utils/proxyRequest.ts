@@ -7,127 +7,136 @@ interface CloudFunctionInnerResult {
   data?: string;
   cookies?: string[];
   error?: string;
-  errno?: number;
+  errno: number;
   rawData?: string;
 }
 
-/**
+export namespace ProxyRequest {
+  export type RequestOption<T> = Pick<WechatMiniprogram.RequestOption<T>, 'url' | 'data' | 'dataType' | 'header' | 'method' | 'redirect' | 'responseType' | 'timeout'> & {
+    success?: (res: RequestSuccessCallbackResult<
+      T>) => void
+    fail?: (res: {errMsg: string}) => void
+    complete?: (res: {errMsg: string}) => void
+  }
+
+  export type RequestSuccessCallbackResult<
+    T extends string | Record<string, any> | ArrayBuffer =
+    | string
+    | Record<string, any>
+    | ArrayBuffer
+    > = Pick<WechatMiniprogram.RequestSuccessCallbackResult<T>, 'header' | 'cookies' | 'data' | 'statusCode' | 'errMsg'>
+
+  /**
  * 代理请求函数，通过云函数转发请求以绕过 referer 限制
  */
-function proxyRequest<
-  T extends string | WechatMiniprogram.IAnyObject | ArrayBuffer =
-  | string
-  | WechatMiniprogram.IAnyObject
-  | ArrayBuffer
->(
-  option: WechatMiniprogram.RequestOption<T> & {
-    /** 重定向处理模式：'follow' 自动跟随，'manual' 手动处理 */
-    redirect?: 'follow' | 'manual';
-  }
-): void {
-  const {
-    url,
-    data = {},
-    header = {},
-    timeout = 60000,
-    method = 'GET',
-    dataType = 'json',
-    responseType = 'text',
-    redirect = 'manual',
-    success,
-    fail,
-    complete
-  } = option;
+  export function request<
+    T extends string | Record<string, any> | ArrayBuffer =
+    | string
+    | Record<string, any>
+    | ArrayBuffer
+  >(
+    option: RequestOption<T>
+  ): void {
+    const {
+      url,
+      data = {},
+      header = {},
+      timeout = 60000,
+      method = 'GET',
+      dataType = 'json',
+      responseType = 'text',
+      redirect = 'manual',
+      success,
+      fail,
+      complete,
+    } = option;
 
-  if (!url) {
-    const failRes: WechatMiniprogram.GeneralCallbackResult = {
-      errMsg: 'proxyRequest: fail 缺少必填参数 "url"'
+    if (!url) {
+      const error = {
+        errMsg: 'proxyRequest: fail url is required',
+        errno: 1001
+      };
+      fail?.(error);
+      complete?.(error);
+      return;
+    }
+
+    const requestHeader = {
+      'content-type': 'application/json',
+      ...header
     };
-    fail?.(failRes);
-    complete?.(failRes);
-    return;
-  }
 
-  const requestHeader = {
-    'content-type': 'application/json',
-    ...header
-  };
+    const cloudParams = {
+      url,
+      method,
+      timeout,
+      requestData: data,
+      requestHeaders: requestHeader,
+      responseType,
+      redirect
+    };
 
-  const cloudParams = {
-    url,
-    method,
-    timeout,
-    requestData: data,
-    requestHeaders: requestHeader,
-    responseType,
-    redirect
-  };
+    wx.cloud.callFunction({
+      name: 'proxyRequest',
+      data: cloudParams,
+      success: (cloudRes) => {
+        const innerResult = cloudRes.result as CloudFunctionInnerResult;
 
-  wx.cloud.callFunction({
-    name: 'proxyRequest',
-    data: cloudParams,
-    success: (cloudRes) => {
-      const innerResult = cloudRes.result as CloudFunctionInnerResult;
+        if (innerResult.success) {
+          let responseData: T;
 
-      if (innerResult.success) {
-        let responseData: T;
-
-        // 处理二进制数据
-        if (responseType === 'arraybuffer') {
-          if (typeof innerResult.rawData === 'string') {
-            try {
-              const bytes = decode(innerResult.rawData);
-              responseData = bytes as unknown as T;
-            } catch {
-              responseData = innerResult.data as unknown as T;
+          if (responseType === 'arraybuffer') {
+            if (typeof innerResult.rawData === 'string') {
+              try {
+                const bytes = decode(innerResult.rawData);
+                responseData = bytes as T;
+              } catch {
+                responseData = innerResult.data as T;
+              }
+            } else {
+              responseData = innerResult.data as T;
             }
           } else {
-            responseData = innerResult.data as unknown as T;
-          }
-        } 
-        // 处理文本及 JSON 数据
-        else {
-          const rawText = innerResult.data || '';
+            const rawText = innerResult.data || '';
 
-          if (dataType === 'json') {
-            try {
-              responseData = rawText.trim() ? JSON.parse(rawText) as T : rawText as unknown as T;
-            } catch {
-              responseData = rawText as unknown as T;
+            if (dataType === 'json') {
+              try {
+                responseData = rawText.trim() ? JSON.parse(rawText) as T : rawText as T;
+              } catch {
+                responseData = rawText as T;
+              }
+            } else {
+              responseData = rawText as T;
             }
-          } else {
-            responseData = rawText as unknown as T;
           }
+
+          const successRes: RequestSuccessCallbackResult<T> = {
+            data: responseData,
+            statusCode: innerResult.statusCode || 200,
+            header: innerResult.headers || {},
+            cookies: innerResult.cookies || [],
+            errMsg: 'proxyRequest: ok',
+          };
+          success?.(successRes);
+          complete?.(successRes);
+          return;
         }
 
-        // 构造与原生请求一致的响应结构
-        const successRes: WechatMiniprogram.RequestSuccessCallbackResult<T> = {
-          data: responseData,
-          statusCode: innerResult.statusCode || 200,
-          header: innerResult.headers || {},
-          cookies: innerResult.cookies || [],
-          errMsg: 'proxyRequest: ok',
-          profile: undefined as unknown as WechatMiniprogram.RequestProfile,
+        const failRes = {
+          errMsg: `proxyRequest: fail ${innerResult.error || 'unknown error'}`,
         };
-        success?.(successRes);
-        complete?.(successRes);
-        return;
+        fail?.(failRes);
+        complete?.(failRes);
+      },
+      fail: (cloudErr) => {
+        const failRes = {
+          errMsg: `proxyRequest: cloud function failed - ${cloudErr.errMsg}`,
+        };
+        fail?.(failRes);
+        complete?.(failRes);
       }
-
-      const failRes: WechatMiniprogram.GeneralCallbackResult = {
-        errMsg: `proxyRequest: fail ${innerResult.error || '未知错误'}`
-      };
-      fail?.(failRes);
-      complete?.(failRes);
-    },
-    fail: (cloudErr: WechatMiniprogram.GeneralCallbackResult) => {
-      const failRes: WechatMiniprogram.GeneralCallbackResult = {
-        errMsg: `proxyRequest: fail 云函数调用失败: ${cloudErr.errMsg}`
-      };
-      fail?.(failRes);
-      complete?.(failRes);
-    }
-  });
+    });
+  }
 }
 
-export default proxyRequest;
+export default ProxyRequest;

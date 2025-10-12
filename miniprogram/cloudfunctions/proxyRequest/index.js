@@ -71,7 +71,8 @@ exports.main = async (event, context) => {
       headers: normalizedHeaders,
       cookies: cookies,
       data: response.data,
-      rawData: rawData
+      rawData: rawData,
+      errno: 0,
     };
   } catch (error) {
     return {
