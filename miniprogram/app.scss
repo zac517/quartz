@@ -1,5 +1,5 @@
 /**app.wxss**/
-view, swiper-item, scroll-view {
+view, swiper, swiper-item, scroll-view {
   box-sizing: border-box;
 }
 
@@ -8,6 +8,12 @@ view, swiper-item, scroll-view {
   width: 0;
   height: 0;
   color: transparent;
+}
+
+.column-center {
+  top: 50%;
+  transform: translateY(-50%);
+  position: relative;
 }
 
 @import '/fonts/iconfont.wxss';

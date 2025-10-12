@@ -1,6 +1,6 @@
 /* pages/timetable/timetable.wxss */
 $table-header-height: 50px;
-$table-column-width: 30px;
+$table-column-width: 36px;
 $table-divid-height: 16px;
 
 $table-grid-height: calc(12.5% - #{$table-divid-height} / 4);
@@ -73,19 +73,39 @@ $font-color: rgba(0, 0, 0, 0.5);
 
   text-align: center;
   background-color: white;
-  padding: 10px 0;
+  padding-top: 5px;
 
   .mouth-number {
-    font-size: 12px;
+    font-size: 13px;
+    line-height: 11px;
     font-weight: 500;
-    line-height: 12px;
-    margin-bottom: 6px;
+    margin-bottom: 5px;
   }
+}
 
-  .mouth-name {
-    font-size: 8px;
-    line-height: 8px;
-  }
+.weekday-day {
+  font-size: 11px;
+  line-height: 11px;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.weekday-date, .mouth-name {
+  font-size: 9px;
+}
+
+.weekdays {
+  display: flex;
+  height: $table-header-height;
+  width: 100%;
+}
+
+.weekday {
+  flex-grow: 1;
+  text-align: center;
+  font-size: 14px;
+  flex-basis: 10%;
+  padding-top: 5px;
 }
 
 .column-content {
@@ -135,12 +155,6 @@ $font-color: rgba(0, 0, 0, 0.5);
   left: -$table-column-width;
 }
 
-.column-center {
-  top: 50%;
-  transform: translateY(-50%);
-  position: relative;
-}
-
 .table-swiper {
   height: 100%;
 }
@@ -154,31 +168,6 @@ $font-color: rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
   height: 100%;
-}
-
-.weekdays {
-  display: flex;
-  height: $table-header-height;
-  width: 100%;
-}
-
-.weekday {
-  flex-grow: 1;
-  text-align: center;
-  font-size: 14px;
-  flex-basis: 10%;
-}
-
-.weekday-day {
-  font-size: 11px;
-  line-height: 11px;
-  margin-bottom: 5px;
-  font-weight: 500;
-}
-
-.weekday-date {
-  height: 10px;
-  font-size: 9px;
 }
 
 .table-courses {

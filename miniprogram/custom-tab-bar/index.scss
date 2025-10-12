@@ -1,6 +1,6 @@
 @import '../fonts/iconfont.wxss';
 
-$primary-color: #9370DB;
+$theme-color: #9370DB;
 
 .tab-bar {
   display: flex;
@@ -42,7 +42,7 @@ $primary-color: #9370DB;
 
 /* 选中状态样式 */
 .tab-icon.selected, .tab-text.selected {
-  color: $primary-color;
+  color: $theme-color;
 }
 
 .tab-icon.selected {

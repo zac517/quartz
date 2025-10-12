@@ -1,5 +1,5 @@
 import { request } from '../request'
-import { studentId } from '../storage'
+import { studentId } from '../../storages/school/user'
 
 // 学期 id 是通过 HTML 返回的，这里尝试用一个函数计算出合工大的学期 id
 /**

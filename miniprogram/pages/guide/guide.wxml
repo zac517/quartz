@@ -1,2 +1,24 @@
 <!--pages/guide/guide.wxml-->
-<text>pages/guide/guide.wxml</text>
+<view class="container" style="--bg-color: {{backgroundColors[currentIndex]}}">
+  <view class="column-center">
+    <swiper style="height: 60vh;" bindchange="handleChange">
+      <swiper-item>
+        <view class="guide-content">
+          <text class="guide-title">欢迎使用 Quartz</text>
+        </view>
+      </swiper-item>
+      <swiper-item>
+        <view class="guide-content">
+          <text class="guide-title">绑定校园账号</text>
+        </view>
+      </swiper-item>
+      <swiper-item>
+        <view class="guide-content">
+          <text class="guide-title">启用云服务</text>
+        </view>
+      </swiper-item>
+    </swiper>
+  </view>
+
+
+</view>

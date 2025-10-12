@@ -1,1 +1,18 @@
 /* pages/guide/guide.wxss */
+.container {
+  height: 100vh;
+  background-color: var(--bg-color);
+  transition: background 1s;
+}
+
+.guide-title {
+  color: white;
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.guide-content {
+  height: 100%;
+  padding: 40px;
+}
