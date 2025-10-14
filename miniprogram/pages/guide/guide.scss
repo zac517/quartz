@@ -1,18 +1,114 @@
 /* pages/guide/guide.wxss */
+$animation-duration: 1s;
+
 .container {
   height: 100vh;
-  background-color: var(--bg-color);
-  transition: background 1s;
+  padding-top: 5vh;
 }
 
-.guide-title {
-  color: white;
-  font-size: 30px;
-  font-weight: 600;
-  letter-spacing: 0.05em;
+.guide-swiper {
+  height: 70vh;
 }
 
 .guide-content {
-  height: 100%;
   padding: 40px;
+  transition: opacity 0.2s;
+  margin-top: 30vh;
+}
+
+.op {
+  opacity: 0 !important;
+}
+
+.text-line {
+  animation: up 0.5s cubic-bezier(0.67, -0.13, 0.64, 1.25) forwards;
+  transform: translateY(20px);
+  opacity: 0;
+}
+
+@keyframes up {
+  0% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.op .text-line {
+  animation: none;
+}
+
+.text-line:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.text-line:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.text-line:nth-child(4) {
+  animation-delay: 0.3s;
+}
+
+.guide-bar {
+  padding: 0 40px;
+  display: flex;
+  align-items: center;
+}
+
+.indicator {
+  width: 60px;
+  height: 8px;
+  display: inline-flex;
+  gap: 5px;
+}
+
+.indicator-item {
+  flex-basis: 8px;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+  transition: 0.2s;
+}
+
+.bar-buttons {
+  display: inline-flex;
+  gap: 20px;
+  flex: 1;
+  justify-content: flex-end;
+  height: 20px;
+}
+
+.guide-next {
+  font-weight: 600;
+}
+
+.guide-title {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+
+.guide-desc {
+  color: rgba(0, 0, 0, 0.5);
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.colored {
+  color: var(--color);
+  transition: 0.2s;
+}
+
+.guide-img {
+  height: 30vh;
+  width: 30vh;
+  opacity: 0.2;
+  position: absolute;
+  top: 10vh;
+  right: -10vh;
+  transition: 0.5s;
 }

@@ -8,12 +8,12 @@ App({
       const isAppInitialized = app.initFlag.value ?? false;
 
       if (!isAppInitialized) {
-        wx.reLaunch({
+        wx.redirectTo({
           url: '/pages/guide/guide'
         })
       }
       else {
-        wx.reLaunch({
+        wx.redirectTo({
           url: '/pages/timetable/timetable'
         })
       }

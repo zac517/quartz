@@ -6,7 +6,7 @@ $table-divid-height: 16px;
 $table-grid-height: calc(12.5% - #{$table-divid-height} / 4);
 $table-grid-height-big: calc((100% - 2 * #{$table-divid-height}) / 11);
 $table-height: calc(137.5% - #{$table-divid-height} / 4 * 3);
-$border-color: #f5f5f5;
+$border-color: #f0f0f0;
 $font-color: rgba(0, 0, 0, 0.5);
 
 .container {
@@ -90,7 +90,8 @@ $font-color: rgba(0, 0, 0, 0.5);
   font-weight: 500;
 }
 
-.weekday-date, .mouth-name {
+.weekday-date,
+.mouth-name {
   font-size: 9px;
 }
 
@@ -112,13 +113,17 @@ $font-color: rgba(0, 0, 0, 0.5);
   width: 100%;
   text-align: center;
   flex-grow: 1;
+  height: 100%;
+}
+
+.bg-low .column-content {
+  border-top: 1px solid $border-color;
 }
 
 .column-grid {
   height: $table-grid-height;
   border-top: 0.5px solid $border-color;
   border-bottom: 0.5px solid $border-color;
-  background-color: white;
 
   .time-number {
     font-size: 11px;
@@ -135,13 +140,13 @@ $font-color: rgba(0, 0, 0, 0.5);
   border-top: none;
 }
 
-.column-wrap {
-  width: $table-column-width;
-  height: 100%;
+.column-grid:last-child {
+  border-bottom: none;
 }
 
 .column-divid {
   height: $table-divid-height;
+  line-height: $table-divid-height;
   width: 100%;
   font-size: 10px;
   background-color: #f5f5f5;
@@ -185,21 +190,6 @@ $font-color: rgba(0, 0, 0, 0.5);
   width: 100%;
 }
 
-.table-background-row {
-  position: absolute;
-  top: 0;
-  right: 0;
-  display: flex;
-  width: calc(100% - #{$table-column-width});
-  height: $table-height;
-  margin-left: $table-column-width;
-}
-
-.table-swiper-move .table-background-row {
-  margin-left: 0px;
-  width: 100%;
-}
-
 .table-swiper-item:last-child .row-grid:last-child {
   border-right: 1px solid $border-color;
 }
@@ -227,10 +217,10 @@ $font-color: rgba(0, 0, 0, 0.5);
   box-sizing: border-box;
   overflow: hidden;
   // margin: 2px;
-   
+
   --color1-bg: #E8F0FE;
   --color2-bg: #E6F4EA;
-  --color3-bg: #FEE0E0; 
+  --color3-bg: #FEE0E0;
   --color4-bg: #F3E8FF;
   --color5-bg: #FFF0E0;
   --color6-bg: #DFF6ED;
@@ -257,7 +247,32 @@ $font-color: rgba(0, 0, 0, 0.5);
   display: flex;
 }
 
-.scroll-view {
-  height: 100%;
+.table-body {
   border-top: 1px solid $border-color;
+  height: 100%;
+  width: 100%;
+  background: repeating-linear-gradient(to right,
+      $border-color,
+      $border-color 1px,
+      white 1px,
+      white calc(100% / 7));
+
+  background-size: calc(100% - #{$table-column-width}) 100%;
+  background-position: $table-column-width;
+  pointer-events: none;
+}
+
+.table-swiper-move .table-body {
+  background-size: 100% 100%;
+  background-position: 0;
+}
+
+.table-swiper-item:last-child .table-body {
+  border-right: 1px solid $border-color;
+}
+
+.column-wrap {
+  width: $table-column-width;
+  top: 50%;
+  transform: translateY(-50%);
 }

@@ -24,6 +24,7 @@ Page({
       ]
     },
     isMove: false,
+    isScrollMove: false,
     isTouch: false,
     isScroll: false,
     scrollTop: 0,
@@ -157,6 +158,20 @@ Page({
     })
   },
 
+  onScrollMoveStart() {
+    if (!this.data.isScrollMove) {
+      this.setData({
+        isScrollMove: true
+      })
+    }
+  },
+
+  onScrollMoveEnd() {
+    this.setData({
+      isScrollMove: false
+    })
+  },
+
   onScroll(e: WechatMiniprogram.ScrollViewScroll) {
     if (!this.data.isScroll) {
       this.setData({
@@ -175,7 +190,7 @@ Page({
         this.setData({
           isScroll: false,
         })
-      }, 10)
+      }, 100)
     }, 70);
   },
 
@@ -196,4 +211,8 @@ Page({
       currentIndex: e.detail.current
     });
   },
+
+  catchMove() {
+    return false;
+  }
 })
