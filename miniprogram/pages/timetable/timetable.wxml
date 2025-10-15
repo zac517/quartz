@@ -14,7 +14,7 @@
 
   <view class="timetable">
     <!--下层背景及侧边栏-->
-    <view class="table-background bg-low" style="opacity: {{ !(isScrollMove || isScroll) ? '1' : '0'}};">
+    <view class="table-background bg-low" style="opacity: {{ moveMode != 'scroll' ? '1' : '0'}};">
       <view class="column-header">
         <view class="column-center">
           <view class="mouth-number">{{ weeks[currentIndex].month }}</view>
@@ -50,12 +50,12 @@
       </scroll-view>
     </view>
 
-    <swiper class="table-swiper {{ !(isScrollMove || isScroll) ? 'table-swiper-move' : ''}} " duration="300" bindtransition="onMoveStart" bindanimationfinish="onMoveEnd" current="{{currentIndex}}" bindchange="onSwiperChange">
-      <swiper-item wx:for="{{weeks}}" wx:key="weekNum" class="table-swiper-item" catchtouchmove="{{ isScrollMove || isScroll ? 'catchMove' : ''}}">
+    <swiper class="table-swiper {{ moveMode != 'scroll' ? 'table-swiper-move' : ''}} " duration="300" bindtransition="onMoveStart" bindanimationfinish="onMoveEnd" current="{{currentIndex}}" bindchange="onSwiperChange">
+      <swiper-item wx:for="{{weeks}}" wx:key="weekNum" class="table-swiper-item" catchtouchmove="{{ moveMode == 'scroll' ? 'catchMove' : ''}}">
         
         <!--课程表头部-->
         <view class="table-header">
-          <view wx:if="{{ isScrollMove || isScroll }}" class="column-header">
+          <view class="column-header">
             <view class="column-center">
               <view class="mouth-number">{{ item.month }}</view>
               <view class="mouth-name">{{ item.monthName }}</view>
@@ -74,13 +74,13 @@
         <!--滚动区域-->
         <swiper class="table-body" vertical="true" bindtransition="onScrollMoveStart" bindanimationfinish="onScrollMoveEnd" duration="300">
           <swiper-item>
-            <scroll-view scroll-y scroll-top="{{scrollTop}}" style="height:100%;pointer-events: {{isMove ? 'none' : 'all'}};" throttle="{{false}}" bindscroll="onScroll">
+            <scroll-view scroll-y scroll-top="{{scrollTop}}" style="height:100%;pointer-events: {{moveMode == 'move' ? 'none' : 'all'}};" throttle="{{false}}" bindscroll="onScroll">
 
               <!--上层课程表侧栏-->
               <view class="table-background">
                 <view class="column-content">
                   <view wx:for="{{timeSlots.morning}}" wx:key="index" class="column-grid">
-                    <view wx:if="{{ isScrollMove || isScroll }}" class="column-wrap">
+                    <view wx:if="{{ moveMode == 'scroll' }}" class="column-wrap">
                       <view class="time-number">{{ index + 1 }}</view>
                       <view class="time-slot">{{ item.timeStart }}</view>
                       <view class="time-slot">{{ item.timeEnd }}</view>
@@ -90,7 +90,7 @@
                     <view class="time-number">午休</view>
                   </view>
                   <view wx:for="{{timeSlots.afternoon}}" wx:key="index" class="column-grid">
-                    <view wx:if="{{ isScrollMove || isScroll }}" class="column-wrap">
+                    <view wx:if="{{ moveMode == 'scroll' }}" class="column-wrap">
                       <view class="time-number">{{ index + 5 }}</view>
                       <view class="time-slot">{{ item.timeStart }}</view>
                       <view class="time-slot">{{ item.timeEnd }}</view>
@@ -100,7 +100,7 @@
                     <view class="time-number">晚休</view>
                   </view>
                   <view wx:for="{{timeSlots.evening}}" wx:key="index" class="column-grid">
-                    <view wx:if="{{ isScrollMove || isScroll }}" class="column-wrap">
+                    <view wx:if="{{ moveMode == 'scroll' }}" class="column-wrap">
                       <view class="time-number">{{ index + 9 }}</view>
                       <view class="time-slot">{{ item.timeStart }}</view>
                       <view class="time-slot">{{ item.timeEnd }}</view>

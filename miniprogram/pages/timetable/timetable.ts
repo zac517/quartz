@@ -23,10 +23,7 @@ Page({
         { timeStart: '21:00', timeEnd: '21:50' },
       ]
     },
-    isMove: false,
-    isScrollMove: false,
-    isTouch: false,
-    isScroll: false,
+    moveMode: 'still',
     scrollTop: 0,
     currentIndex: 0,
     weeks: [
@@ -46,22 +43,22 @@ Page({
         ],
         courses: [
           // 周一课程
-          { name: '高等数学', info: '一教101', teacher: '李老师', day: 1, rowStart: 1, rowEnd: 3, colorGroup: 1 }, 
-          { name: '大学英语', info: '三教301', teacher: '王老师', day: 1, rowStart: 3, rowEnd: 5, colorGroup: 4 }, 
-          
+          { name: '高等数学', info: '一教101', teacher: '李老师', day: 1, rowStart: 1, rowEnd: 3, colorGroup: 1 },
+          { name: '大学英语', info: '三教301', teacher: '王老师', day: 1, rowStart: 3, rowEnd: 5, colorGroup: 4 },
+
           // 周二课程
-          { name: '大学物理', info: '二教202', teacher: '张老师', day: 2, rowStart: 1, rowEnd: 3, colorGroup: 2 }, 
-          { name: '高等数学', info: '一教101', teacher: '李老师', day: 2, rowStart: 6, rowEnd: 8, colorGroup: 1 }, 
-          
+          { name: '大学物理', info: '二教202', teacher: '张老师', day: 2, rowStart: 1, rowEnd: 3, colorGroup: 2 },
+          { name: '高等数学', info: '一教101', teacher: '李老师', day: 2, rowStart: 6, rowEnd: 8, colorGroup: 1 },
+
           // 周三课程
-          { name: '计算机基础', info: '三教303', teacher: '刘老师', day: 3, rowStart: 3, rowEnd: 5, colorGroup: 3 }, 
-          { name: '大学英语', info: '三教301', teacher: '王老师', day: 3, rowStart: 8, rowEnd: 10, colorGroup: 4 }, 
-          
+          { name: '计算机基础', info: '三教303', teacher: '刘老师', day: 3, rowStart: 3, rowEnd: 5, colorGroup: 3 },
+          { name: '大学英语', info: '三教301', teacher: '王老师', day: 3, rowStart: 8, rowEnd: 10, colorGroup: 4 },
+
           // 周五课程
-          { name: '体育', info: '操场', teacher: '赵老师', day: 5, rowStart: 11, rowEnd: 14, colorGroup: 5 } 
+          { name: '体育', info: '操场', teacher: '赵老师', day: 5, rowStart: 11, rowEnd: 14, colorGroup: 5 }
         ]
       },
-      
+
       // 第二周
       {
         weekNum: 2,
@@ -78,22 +75,22 @@ Page({
         ],
         courses: [
           // 周一课程
-          { name: '高等数学', info: '一教101', teacher: '李老师', day: 1, rowStart: 1, rowEnd: 3, colorGroup: 1 }, 
-          { name: '线性代数', info: '一教105', teacher: '孙老师', day: 1, rowStart: 6, rowEnd: 8, colorGroup: 6 }, 
-          
+          { name: '高等数学', info: '一教101', teacher: '李老师', day: 1, rowStart: 1, rowEnd: 3, colorGroup: 1 },
+          { name: '线性代数', info: '一教105', teacher: '孙老师', day: 1, rowStart: 6, rowEnd: 8, colorGroup: 6 },
+
           // 周三课程
-          { name: '计算机基础', info: '三教303', teacher: '刘老师', day: 3, rowStart: 3, rowEnd: 5, colorGroup: 3 }, 
-          { name: '概率论', info: '二教208', teacher: '陈老师', day: 3, rowStart: 8, rowEnd: 10, colorGroup: 7 }, 
-          
+          { name: '计算机基础', info: '三教303', teacher: '刘老师', day: 3, rowStart: 3, rowEnd: 5, colorGroup: 3 },
+          { name: '概率论', info: '二教208', teacher: '陈老师', day: 3, rowStart: 8, rowEnd: 10, colorGroup: 7 },
+
           // 周四课程
-          { name: '大学英语', info: '三教301', teacher: '王老师', day: 4, rowStart: 1, rowEnd: 3, colorGroup: 4 }, 
+          { name: '大学英语', info: '三教301', teacher: '王老师', day: 4, rowStart: 1, rowEnd: 3, colorGroup: 4 },
           { name: '线性代数', info: '一教105', teacher: '孙老师', day: 4, rowStart: 6, rowEnd: 8, colorGroup: 6 },
-          
+
           // 周六课程
-          { name: '选修课', info: '四教402', teacher: '周老师', day: 6, rowStart: 1, rowEnd: 3, colorGroup: 8 } 
+          { name: '选修课', info: '四教402', teacher: '周老师', day: 6, rowStart: 1, rowEnd: 3, colorGroup: 8 }
         ]
       },
-      
+
       // 第三周
       {
         weekNum: 3,
@@ -110,25 +107,31 @@ Page({
         ],
         courses: [
           // 周二课程
-          { name: '大学物理', info: '二教202', teacher: '张老师', day: 2, rowStart: 1, rowEnd: 3, colorGroup: 2 }, 
+          { name: '大学物理', info: '二教202', teacher: '张老师', day: 2, rowStart: 1, rowEnd: 3, colorGroup: 2 },
           { name: '数据结构', info: '三教310', teacher: '黄老师', day: 2, rowStart: 6, rowEnd: 8, colorGroup: 9 },
-          
+
           // 周四课程
-          { name: '操作系统', info: '四教408', teacher: '吴老师', day: 4, rowStart: 6, rowEnd: 8, colorGroup: 8 }, 
-          { name: '大学英语', info: '三教301', teacher: '王老师', day: 4, rowStart: 8, rowEnd: 10, colorGroup: 4 }, 
-          
+          { name: '操作系统', info: '四教408', teacher: '吴老师', day: 4, rowStart: 6, rowEnd: 8, colorGroup: 8 },
+          { name: '大学英语', info: '三教301', teacher: '王老师', day: 4, rowStart: 8, rowEnd: 10, colorGroup: 4 },
+
           // 周五课程
           { name: '体育', info: '操场', teacher: '赵老师', day: 5, rowStart: 11, rowEnd: 14, colorGroup: 5 },
-          { name: '概率论', info: '二教208', teacher: '陈老师', day: 5, rowStart: 3, rowEnd: 5, colorGroup: 7 }, 
-          
+          { name: '概率论', info: '二教208', teacher: '陈老师', day: 5, rowStart: 3, rowEnd: 5, colorGroup: 7 },
+
           // 周日课程
-          { name: '数据库', info: '一教112', teacher: '马老师', day: 7, rowStart: 1, rowEnd: 3, colorGroup: 10 } 
+          { name: '数据库', info: '一教112', teacher: '马老师', day: 7, rowStart: 1, rowEnd: 3, colorGroup: 10 }
         ]
       }
     ]
   },
 
+  isMove: false,
+  isScrollMove: false,
+  isTouch: false,
+  isScroll: false,
+
   scrollTimeout: 0,
+  changeModeTimeout: 0,
 
   async test() {
     const result = await getTimeTable();
@@ -144,66 +147,80 @@ Page({
     }
   },
 
-  onMoveStart() {
-    if (!this.data.isMove) {
+  changeMoveMode() {
+    if (this.isMove) {
       this.setData({
-        isMove: true
+        scrollTop: this.data.scrollTop,
       })
+      this.changeModeTimeout = setTimeout(() => {
+        this.setData({
+          moveMode: 'move'
+        })
+      }, 50)
+    }
+    else if (this.isScroll || this.isScrollMove) {
+      clearTimeout(this.changeModeTimeout);
+      this.setData({
+        moveMode: 'scroll'
+      })
+    }
+    else if (!(this.data.moveMode == 'scroll' && this.isTouch)) {
+      this.setData({
+        scrollTop: this.data.scrollTop,
+      })
+      this.changeModeTimeout = setTimeout(() => {
+        this.setData({
+          moveMode: 'still'
+        })
+      }, 50)
+    };
+  },
+
+  onMoveStart() {
+    if (!this.isMove) {
+      this.isMove = true;
+      this.changeMoveMode();
     }
   },
 
   onMoveEnd() {
-    this.setData({
-      isMove: false
-    })
+    this.isMove = false;
+    this.changeMoveMode();
   },
 
   onScrollMoveStart() {
-    if (!this.data.isScrollMove) {
-      this.setData({
-        isScrollMove: true
-      })
+    if (!this.isScrollMove) {
+      this.isScrollMove = true;
+      this.changeMoveMode();
     }
   },
 
   onScrollMoveEnd() {
-    this.setData({
-      isScrollMove: false
-    })
+    this.isScrollMove = false;
+    this.changeMoveMode();
   },
 
   onScroll(e: WechatMiniprogram.ScrollViewScroll) {
-    if (!this.data.isScroll) {
-      this.setData({
-        isScroll: true,
-      })
+    if (!this.isScroll) {
+      this.isScroll = true;
+      this.changeMoveMode();
     }
 
     clearTimeout(this.scrollTimeout);
     this.data.scrollTop = e.detail.scrollTop;
     this.scrollTimeout = setTimeout(() => {
-      this.setData({
-        scrollTop: this.data.scrollTop,
-      })
-
-      setTimeout(() => {
-        this.setData({
-          isScroll: false,
-        })
-      }, 100)
-    }, 70);
+      this.isScroll = false;
+      this.changeMoveMode();
+    }, 100);
   },
 
   onTouchStart() {
-    this.setData({
-      isTouch: true
-    })
+    this.isTouch = true;
   },
 
   onTouchEnd() {
-    this.setData({
-      isTouch: false
-    })
+    this.isTouch = false;
+    this.changeMoveMode();
   },
 
   onSwiperChange(e: WechatMiniprogram.SwiperChange) {
@@ -213,6 +230,6 @@ Page({
   },
 
   catchMove() {
-    return false;
+    return true;
   }
 })

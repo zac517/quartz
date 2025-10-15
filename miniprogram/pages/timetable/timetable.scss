@@ -190,20 +190,6 @@ $font-color: rgba(0, 0, 0, 0.5);
   width: 100%;
 }
 
-.table-swiper-item:last-child .row-grid:last-child {
-  border-right: 1px solid $border-color;
-}
-
-.table-swiper-item:first-child .row-grid:first-child {
-  border-left: 1px solid $border-color;
-}
-
-.row-grid {
-  flex-grow: 1;
-  border-left: 0.5px solid $border-color;
-  border-right: 0.5px solid $border-color;
-}
-
 .table-swiper .column-divid {
   z-index: 1;
 }
@@ -276,3 +262,9 @@ $font-color: rgba(0, 0, 0, 0.5);
   top: 50%;
   transform: translateY(-50%);
 }
+
+.table-swiper-move .column-header {
+  opacity: 0;
+  width: 0;
+}
+
