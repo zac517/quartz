@@ -1,5 +1,7 @@
 {
-  "usingComponents": {},
+  "usingComponents": {
+    "timetable": "/components/timetable/timetable"
+  },
   "navigationStyle": "default",
   "navigationBarBackgroundColor": "#ffffff",
   "navigationBarTextStyle": "black",

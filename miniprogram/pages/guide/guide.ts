@@ -6,10 +6,13 @@ Page({
       '#9370DB',
       '#9e030b',
       '#165DFF',
-      '#9370DB',
-    ]
+    ],
+    barHeight: 0,
   },
   onLoad() {
+    this.setData({
+      barHeight: wx.getWindowInfo().statusBarHeight,
+    })
   },
   handleChange(e: WechatMiniprogram.SwiperChange) {
     this.setData({

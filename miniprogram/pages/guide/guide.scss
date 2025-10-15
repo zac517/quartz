@@ -2,18 +2,22 @@
 $animation-duration: 1s;
 
 .container {
-  height: 100vh;
-  padding-top: 5vh;
+  margin-top: calc(var(--bar-height) + 44px);
+  height: calc(100vh - var(--bar-height) - 44px);
+  padding: 40px 40px 80px 40px;
 }
 
 .guide-swiper {
-  height: 70vh;
+  height: calc(100% - 120px);
+  margin: 40px 0;
 }
 
 .guide-content {
-  padding: 40px;
   transition: opacity 0.2s;
-  margin-top: 30vh;
+  height: 240px;
+  position: absolute;
+  bottom: 0;
+  width: 100%;
 }
 
 .op {
@@ -55,13 +59,12 @@ $animation-duration: 1s;
 }
 
 .guide-bar {
-  padding: 0 40px;
   display: flex;
   align-items: center;
 }
 
 .indicator {
-  width: 60px;
+  width: 50px;
   height: 8px;
   display: inline-flex;
   gap: 5px;
@@ -80,10 +83,7 @@ $animation-duration: 1s;
   flex: 1;
   justify-content: flex-end;
   height: 20px;
-}
-
-.guide-next {
-  font-weight: 600;
+  width: 100%;
 }
 
 .guide-title {
@@ -93,9 +93,9 @@ $animation-duration: 1s;
 }
 
 .guide-desc {
-  color: rgba(0, 0, 0, 0.5);
   font-size: 14px;
   margin-bottom: 10px;
+  font-weight: 300;
 }
 
 .colored {
@@ -106,9 +106,26 @@ $animation-duration: 1s;
 .guide-img {
   height: 30vh;
   width: 30vh;
-  opacity: 0.2;
   position: absolute;
-  top: 10vh;
+  top: 15vh;
   right: -10vh;
   transition: 0.5s;
+}
+
+.guide-img-cover {
+  background: linear-gradient(
+    to top right,
+    rgba(255, 255, 255, 1) 20%,
+    rgba(255, 255, 255, 0.8) 60%
+  );
+  pointer-events: none;
+}
+
+.guide-button {
+  font-weight: 600;
+}
+
+.bottom-buttons {
+  position: absolute;
+  bottom: 0;
 }
