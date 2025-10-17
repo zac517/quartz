@@ -72,7 +72,7 @@ $animation-duration: 1s;
 
 .indicator-item {
   flex-basis: 8px;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.2);
   border-radius: 4px;
   transition: 0.2s;
 }
@@ -108,17 +108,12 @@ $animation-duration: 1s;
   width: 30vh;
   position: absolute;
   top: 15vh;
-  right: -10vh;
+  right: -15vh;
   transition: 0.5s;
 }
 
-.guide-img-cover {
-  background: linear-gradient(
-    to top right,
-    rgba(255, 255, 255, 1) 20%,
-    rgba(255, 255, 255, 0.8) 60%
-  );
-  pointer-events: none;
+.guide-img.op {
+  transition: 0.1s;
 }
 
 .guide-button {
@@ -128,4 +123,13 @@ $animation-duration: 1s;
 .bottom-buttons {
   position: absolute;
   bottom: 0;
+}
+
+.icon-img {
+  font-size: 30vh;
+  color: #165DFF;
+}
+
+.disabled {
+  opacity: 0.5;
 }

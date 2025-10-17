@@ -16,7 +16,7 @@ class Storage<T = any> {
    * 从本地存储读取值（同步）
    * @returns 解析后的值或默认值
    */
-  get value(): T | void {
+  get value(): T | undefined {
     try {
       const storedValue = wx.getStorageSync(this.key);
       
@@ -43,7 +43,7 @@ class Storage<T = any> {
    * 写入值到本地存储（同步）
    * @param value 要存储的值
    */
-  set value(value: T | void) {
+  set value(value: T | undefined) {
     try {
       // 处理 null / undefined
       if (value === null || value === undefined) {
@@ -67,7 +67,7 @@ class Storage<T = any> {
    * 从本地存储读取值（异步）
    * @returns Promise<T> 解析后的值或默认值
    */
-  async getValueAsync(): Promise<T | void> {
+  async getValueAsync(): Promise<T | undefined> {
     try {
       const res = await wx.getStorage({ key: this.key });
       const storedValue = res.data;

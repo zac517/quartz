@@ -1,14 +1,19 @@
 <!--login.wxml-->
-<scroll-view class="scrollarea" scroll-y type="list">
-  <view class="container">
-  <image id="code-page" src="{{imageUrl}}"/>
-  <text>验证码： {{varCode}} </text>
-  <input model:value="{{varCode}}" style="border: solid 1px black;" />
-  <text>账号： {{username}} </text>
-  <input model:value="{{username}}" style="border: solid 1px black;" />
-  <text>密码： {{password}} </text>
-  <input model:value="{{password}}" style="border: solid 1px black;" />
-  <button type="primary" bind:tap="test">登录</button>
-  <text>登录结果：{{testData}}</text>
-  </view>
-</scroll-view>
+<view class="container">
+  <image class="login-img" mode="widthFix" src="cloud://cloud1-5g87ixg4fca1088e.636c-cloud1-5g87ixg4fca1088e-1332869741/bingtang.jpg"></image>
+  <swiper vertical="true" style="height: 100%;">
+    <swiper-item>
+      <view class="column-center">
+        <view class="form-title">登录</view>
+        <input class="form-input" model:value="{{username}}" placeholder="账号" confirm-type="next" cursor-spacing="20" />
+        <input class="form-input" model:value="{{password}}" placeholder="密码" confirm-type="next" password cursor-spacing="20" />
+        <view class="form-row">
+          <input class="form-input" model:value="{{varCode}}" placeholder="验证码" confirm-type="done" cursor-spacing="20" />
+          <image mode="heightFix" class="varcode" src="{{imageUrl}}" />
+        </view>
+        <view class="form-btn" bind:tap="test">登录</view>
+      </view>
+    </swiper-item>
+  </swiper>
+
+</view>

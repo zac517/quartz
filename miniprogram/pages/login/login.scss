@@ -1,11 +1,73 @@
 /* pages/login/login.wxss */
-/**index.scss**/
-page {
+
+.container {
+  padding: 20px;
   height: 100vh;
-  display: flex;
-  flex-direction: column;
 }
-.scrollarea {
-  flex: 1;
-  overflow-y: hidden;
+
+.form-input {
+  height: 40px;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: white;
+  border: 1px solid #dedede;
+}
+
+.form-row {
+  display: flex;
+  gap: 20px;
+  margin: 10px 0;
+}
+
+.form-row .form-input {
+  flex-grow: 1;
+  margin: 0;
+}
+
+.varcode {
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.form-btn {
+  height: 40px;
+  background-color: #ae2126;
+  color: white;
+  text-align: center;
+  line-height: 40px;
+  margin-top: 20px;
+}
+
+.login-img {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  top: 0;
+  opacity: 0.5;
+}
+
+.login-img::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to top,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+.column-center {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.form-title {
+  text-align: center;
+  font-size: 28px;
 }

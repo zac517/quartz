@@ -1,13 +1,13 @@
 <!--pages/guide/guide.wxml-->
 <view class="container" style="--color: {{colors[currentIndex]}}; --bar-height: {{barHeight}}px">
+  <image wx:for="{{ images }}" wx:key="index" data-index="{{ index }}" bindload="showImg" class="guide-img {{ item.loaded ? '' : 'op'}} {{currentIndex != index ? 'op' : ''}}" src="{{ item.src }}" style="{{ item.style }}"></image>
+  <view class="guide-img  {{currentIndex != 2 ? 'op' : ''}}"  style="opacity: 0.15;"><text class="iconfont icon-cloud icon-img"></text></view>
+
   <view class="guide-bar">
     <view class="bar-buttons">
       <view wx:if="{{currentIndex < colors.length - 1 }}" bind:tap="skip">跳过</view>
     </view>
   </view>
-  <image class="guide-img  {{currentIndex != 0 ? 'op' : ''}}" src="cloud://cloud1-5g87ixg4fca1088e.636c-cloud1-5g87ixg4fca1088e-1332869741/logo.png"></image>
-  <image class="guide-img  {{currentIndex != 1 ? 'op' : ''}}" src="cloud://cloud1-5g87ixg4fca1088e.636c-cloud1-5g87ixg4fca1088e-1332869741/hfut.png"></image>
-  <view class="guide-img guide-img-cover"></view>
   <swiper class="guide-swiper" bindchange="handleChange" current="{{ currentIndex }}">
     <swiper-item>
       <swiper vertical="true" style="height: 100%;">
@@ -28,7 +28,8 @@
             <view class="guide-desc text-line">登录后启用<text class="colored">课表导入</text>、<text class="colored">校园信息查询</text>等。</view>
             <view class="guide-desc text-line">数据获取不经过任何私人服务器。</view>
             <view class="bar-buttons bottom-buttons">
-              <view class="guide-button colored" bind:tap="login">登录</view>
+              <view wx:if="{{ isLogin }}"  class="guide-button colored disabled">已登录</view>
+              <view wx:else class="guide-button colored" bind:tap="login">登录</view>
             </view>
           </view>
         </swiper-item>

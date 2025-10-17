@@ -1,19 +1,51 @@
-// pages/guide/guide.ts
+import { app } from '../../storages/config'
+
 Page({
   data: {
     currentIndex: 0,
     colors: [
       '#9370DB',
-      '#9e030b',
+      '#ae2126',
       '#165DFF',
     ],
     barHeight: 0,
+    images: [
+      {
+        loaded: false,
+        src: 'cloud://cloud1-5g87ixg4fca1088e.636c-cloud1-5g87ixg4fca1088e-1332869741/logo.png',
+        style: 'opacity: 0.2;',
+      },
+      {
+        loaded: false,
+        src: 'cloud://cloud1-5g87ixg4fca1088e.636c-cloud1-5g87ixg4fca1088e-1332869741/hfut.png',
+        style: 'opacity: 0.1;'
+      },
+    ],
+
+
+    isLogin: true,
+    useCloud: true,
   },
-  onLoad() {
+  
+  showImg(e: WechatMiniprogram.BaseEvent) {
+    const { index } = e.currentTarget.dataset;
+    this.data.images[index].loaded = true;
     this.setData({
-      barHeight: wx.getWindowInfo().statusBarHeight,
+      'images': this.data.images,
     })
   },
+
+  onLoad() {
+    const { isLogin, useCloud } = app;
+    this.setData({
+      barHeight: wx.getWindowInfo().statusBarHeight,
+
+    });
+    wx.getImageInfo({
+      src: 'cloud://cloud1-5g87ixg4fca1088e.636c-cloud1-5g87ixg4fca1088e-1332869741/bingtang.jpg'
+    })
+  },
+
   handleChange(e: WechatMiniprogram.SwiperChange) {
     this.setData({
       currentIndex: e.detail.current
@@ -34,6 +66,11 @@ Page({
   skip() {
     wx.switchTab({
       url: '/pages/timetable/timetable'
+    })
+  },
+  login() {
+    wx.navigateTo({
+      url: '/pages/login/login'
     })
   },
 })

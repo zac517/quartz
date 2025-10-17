@@ -6,7 +6,6 @@ import {encode} from 'base64-arraybuffer'
 Page({
   data: {
     varCode: '',
-    testData: '',
     username: '',
     password: '',
     imageUrl: '',
