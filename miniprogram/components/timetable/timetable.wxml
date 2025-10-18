@@ -7,7 +7,7 @@
         <view class="mouth-name">{{ weeks[current].monthName }}</view>
       </view>
     </view>
-    <scroll-view class="column-content" scroll-y scroll-top="{{scrollTop}}" enable-passive>
+    <scroll-view class="column-content" scroll-y scroll-top="{{scrollTop}}" enable-passive throttle="{{false}}">
       <view wx:for="{{timeSlots.morning}}" wx:key="index" class="column-grid">
         <view class="column-wrap">
           <view class="time-number">{{ index + 1 }}</view>
@@ -60,7 +60,7 @@
       <!--滚动区域-->
       <swiper class="table-body" vertical="true" bindtransition="onScrollMoveStart" bindanimationfinish="onScrollMoveEnd" duration="300">
         <swiper-item>
-          <scroll-view scroll-y scroll-top="{{scrollTop}}" style="height:100%;pointer-events: {{moveMode == 'move' ? 'none' : 'all'}};" throttle="{{false}}" bindscroll="onScroll" 	enable-passive>
+          <scroll-view scroll-y scroll-top="{{scrollTop}}" style="height:100%;pointer-events: {{moveMode == 'move' ? 'none' : 'all'}};" throttle="{{false}}" bindscroll="onScroll" enable-passive>
 
             <!--上层课程表侧栏-->
             <view class="table-background">

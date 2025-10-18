@@ -1,7 +1,8 @@
 // components/timetable/timetable.ts
 Component({
   options: {
-    pureDataPattern: /^_/ // 指定所有 _ 开头的数据字段为纯数据字段
+    pureDataPattern: /^_/,
+    virtualHost: true
   },
 
   /**
@@ -212,7 +213,7 @@ Component({
       this.data._scrollTimeout = setTimeout(() => {
         this.data._isScroll = false;
         this.changeMoveMode();
-      }, 100);
+      }, 200);
     },
 
     onTouchStart() {
