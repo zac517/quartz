@@ -58,16 +58,17 @@ Page({
       })
     }
     else {
-      wx.switchTab({
-        url: '/pages/timetable/timetable'
-      })
+      this.skip();
     }
   },
   skip() {
+    const { initFlag } = app;
+    initFlag.value = true;
     wx.switchTab({
       url: '/pages/timetable/timetable'
     })
   },
+
   login() {
     wx.navigateTo({
       url: '/pages/login/login'

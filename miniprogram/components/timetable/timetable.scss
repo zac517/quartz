@@ -1,32 +1,27 @@
+// 变量定义
 $table-header-height: 50px;
 $table-column-width: 36px;
 $table-divid-height: 16px;
+$days-per-week: 7;
 
-$table-grid-height: calc(12.5% - #{$table-divid-height} / 4);
-$table-grid-height-big: calc((100% - 2 * #{$table-divid-height}) / 11);
-$table-height: calc(137.5% - #{$table-divid-height} / 4 * 3);
 $border-color: #f5f5f5;
 $font-color: rgba(0, 0, 0, 0.5);
 
 .timetable {
   height: 100%;
-}
-
-.table-background {
-  position: absolute;
-  width: 100%;
-  height: 100%;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
-  pointer-events: none;
 }
 
+// 头部区域
 .column-header {
   height: $table-header-height;
-  width: $table-column-width;
   flex-shrink: 0;
-
+  opacity: 0;
+  width: 0;
   text-align: center;
+  z-index: 2;
   background-color: white;
   padding-top: 5px;
 
@@ -35,6 +30,30 @@ $font-color: rgba(0, 0, 0, 0.5);
     line-height: 11px;
     font-weight: 500;
     margin-bottom: 5px;
+  }
+
+  .mouth-name {
+    font-size: 9px;
+  }
+}
+
+.header-top.column-header {
+  opacity: 1;
+  width: $table-column-width;
+}
+
+.weekdays {
+  display: flex;
+  height: $table-header-height;
+  width: 100%;
+  background-color: white;
+
+  .weekday {
+    flex-grow: 1;
+    text-align: center;
+    font-size: 14px;
+    flex-basis: calc(100% / $days-per-week);
+    padding-top: 5px;
   }
 }
 
@@ -45,40 +64,41 @@ $font-color: rgba(0, 0, 0, 0.5);
   font-weight: 500;
 }
 
-.weekday-date,
-.mouth-name {
+.weekday-date {
   font-size: 9px;
 }
 
-.weekdays {
-  display: flex;
-  height: $table-header-height;
+// 背景层
+.timetable-bg {
   width: 100%;
-}
-
-.weekday {
-  flex-grow: 1;
-  text-align: center;
-  font-size: 14px;
-  flex-basis: 10%;
-  padding-top: 5px;
-}
-
-.column-content {
-  width: 100%;
-  text-align: center;
-  flex-grow: 1;
-  height: 100%;
-}
-
-.bg-low .column-content {
   border-top: 1px solid $border-color;
+  flex-grow: 1;
+
+  .column-wrap {
+    opacity: 1;
+  }
+}
+
+// 侧边栏
+.column-content {
+  position: absolute;
+  width: 100%;
+  flex-grow: 1;
+  height: calc(137.5% - #{$table-divid-height} / 4 * 3);
+  display: grid;
+  grid-template-rows: repeat(4, 1fr) $table-divid-height repeat(4, 1fr) $table-divid-height repeat(3, 1fr);
+}
+
+.column-wrap {
+  width: $table-column-width;
+  top: 50%;
+  transform: translateY(-50%);
+  opacity: 0;
+  text-align: center;
 }
 
 .column-grid {
-  height: $table-grid-height;
-  border-top: 0.5px solid $border-color;
-  border-bottom: 0.5px solid $border-color;
+  position: relative;
 
   .time-number {
     font-size: 11px;
@@ -89,143 +109,151 @@ $font-color: rgba(0, 0, 0, 0.5);
     font-size: 8px;
     color: $font-color;
   }
-}
 
-.column-grid:first-child {
-  border-top: none;
-}
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 1px;
+    background: $border-color;
+    transform-origin: 0 0;
+  }
 
-.column-grid:last-child {
-  border-bottom: none;
+  &:first-child::before {
+    display: none;
+  }
 }
 
 .column-divid {
   height: $table-divid-height;
   line-height: $table-divid-height;
-  width: 100%;
+  width: calc(100% + #{$table-column-width});
+  left: -$table-column-width;
   font-size: 10px;
-  background-color: #f5f5f5;
+  background-color: $border-color;
   color: $font-color;
   position: relative;
+  text-align: center;
 }
 
-.table-swiper-move .column-divid {
-  width: calc(100% + #{$table-column-width});
-  position: relative;
-  left: -$table-column-width;
-}
-
+// Swiper 区域
 .table-swiper {
   height: 100%;
-}
-
-.table-swiper-move {
   width: calc(100% - #{$table-column-width});
   margin-left: $table-column-width;
+  position: absolute;
+
+  .column-divid {
+    z-index: 1;
+  }
 }
 
 .table-swiper-item {
   display: flex;
   flex-direction: column;
   height: 100%;
-}
 
-.table-courses {
-  flex-grow: 1;
-  display: grid;
-  height: $table-height;
-  margin-left: $table-column-width;
-  grid-template-columns: repeat(7, 1fr);
-  grid-template-rows: repeat(4, $table-grid-height-big) $table-divid-height repeat(4, $table-grid-height-big) $table-divid-height repeat(3, $table-grid-height-big);
-  position: relative;
-  transform: translateX(0.5px);
-}
-
-.table-swiper-move .table-courses {
-  margin-left: 0px;
-  width: 100%;
-}
-
-.table-swiper .column-divid {
-  z-index: 1;
-}
-
-.course-block {
-  position: relative;
-  grid-row: var(--row-start) / var(--row-end);
-  grid-column: var(--col);
-  // border-radius: 4px;
-  padding: 3px;
-  box-sizing: border-box;
-  overflow: hidden;
-  // margin: 2px;
-
-  --color1-bg: #E8F0FE;
-  --color2-bg: #E6F4EA;
-  --color3-bg: #FEE0E0;
-  --color4-bg: #F3E8FF;
-  --color5-bg: #FFF0E0;
-  --color6-bg: #DFF6ED;
-  --color7-bg: #FEE2E2;
-  --color8-bg: #EEF2FF;
-  --color9-bg: #FEF3C7;
-  --color10-bg: #E0F2FE;
-}
-
-.course-name {
-  font-size: 11px;
-  letter-spacing: 0.05em;
-  line-height: 15px;
-  font-weight: 400;
-}
-
-.course-info,
-.course-teacher {
-  font-size: 9px;
-  color: $font-color;
-}
-
-.table-header {
-  display: flex;
+  &:last-child .table-body {
+    border-right: 1px solid $border-color;
+  }
 }
 
 .table-body {
   border-top: 1px solid $border-color;
   height: 100%;
   width: 100%;
-  background: repeating-linear-gradient(to right,
-      $border-color,
-      $border-color 1px,
-      white 1px,
-      white calc(100% / 7));
-
-  background-size: calc(100% - #{$table-column-width}) 100%;
-  background-position: $table-column-width;
-  pointer-events: none;
-}
-
-.table-swiper-move .table-body {
+  background: repeating-linear-gradient(
+    to right,
+    $border-color,
+    $border-color 1px,
+    white 1px,
+    white calc(100% / #{$days-per-week})
+  );
   background-size: 100% 100%;
   background-position: 0;
 }
 
-.table-swiper-item:last-child .table-body {
-  border-right: 1px solid $border-color;
+// 课程块
+.table-courses {
+  grid-template-columns: repeat($days-per-week, 1fr);
+  transform: translateX(0.5px);
 }
 
-.column-wrap {
-  width: $table-column-width;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.table-swiper-move .column-header {
-  opacity: 0;
-  width: 0;
-}
-
-.column-center {
-  top: 50%;
-  transform: translateY(-50%);
+.course-block {
   position: relative;
+  grid-row: var(--row-start) / var(--row-end);
+  grid-column: var(--col);
+  padding: 3px;
+  box-sizing: border-box;
+  overflow: hidden;
+
+  .course-name {
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    line-height: 15px;
+    font-weight: 400;
+  }
+
+  .course-info,
+  .course-teacher {
+    font-size: 9px;
+    color: $font-color;
+  }
+}
+
+// 滚动模式
+.scroll {
+  .timetable-bg {
+    opacity: 0;
+  }
+
+  .column-wrap {
+    opacity: 1;
+  }
+
+  .column-header {
+    opacity: 1;
+    width: $table-column-width;
+  }
+
+  .table-body {
+    background-size: calc(100% - #{$table-column-width}) 100%;
+    background-position: $table-column-width;
+  }
+
+  .table-courses {
+    margin-left: $table-column-width;
+    width: calc(100% - #{$table-column-width});
+  }
+
+  .column-divid {
+    width: 100%;
+    left: 0;
+  }
+
+  .table-swiper {
+    margin: 0;
+    width: 100%;
+  }
+
+  .weekdays {
+    width: calc(100% - #{$table-column-width});
+    margin-left: $table-column-width;
+  }
+}
+
+// 移动模式
+.move {
+  .table-body {
+    pointer-events: none;
+  }
+}
+
+// 工具类
+.vertical-center {
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
 }

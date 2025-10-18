@@ -1,0 +1,123 @@
+var isMove = false;
+var onMoveStart = function(event, ownerInstance) {
+  if (!isMove) {
+    isMove = true;
+    changeMode(event, ownerInstance);
+  }
+};
+
+var onMoveEnd = function(event, ownerInstance) {
+  isMove = false;
+  changeMode(event, ownerInstance);
+};
+
+var isScrollMove = false;
+var onScrollMoveStart = function(event, ownerInstance) {
+  if (!isScrollMove) {
+    isScrollMove = true;
+    changeMode(event, ownerInstance);
+  }
+};
+
+var onScrollMoveEnd = function(event, ownerInstance) {
+  isScrollMove = false;
+  changeMode(event, ownerInstance);
+};
+
+var isTouch = false;
+var onTouchStart = function() {
+  isTouch = true;
+};
+
+var onTouchEnd = function(event, ownerInstance) {
+  isTouch = false;
+  changeMode(event, ownerInstance);
+};
+
+var isScroll = false;
+var scrollTop = 0;
+var scrollTimeout;
+
+var onScrollEnd = function(event, ownerInstance) {
+  isScroll = false;
+  changeMode(event, ownerInstance);
+}
+
+var onScroll = function(event, ownerInstance) {
+  var instance = ownerInstance.selectComponent('.column-content');
+  instance.setStyle({
+    "transform": 'translateY(-' + event.detail.scrollTop + 'px'
+  });
+
+  if (!isScroll) {
+    isScroll = true;
+    changeMode(event, ownerInstance);
+  }
+
+  ownerInstance.clearTimeout(scrollTimeout);
+  scrollTop = event.detail.scrollTop;
+  scrollTimeout = ownerInstance.setTimeout(onScrollEnd, 100, event, ownerInstance);
+};
+
+var changeModeChild = function(md, ownerInstance) {
+  mode = md;
+  if (mode == 'move') {
+    ownerInstance.selectComponent('.timetable').removeClass('scroll');
+    ownerInstance.selectComponent('.timetable').addClass('move');
+    ownerInstance.callMethod('setData', {
+      isScroll: false,
+    })
+  }
+  else if (mode == 'scroll') {
+    ownerInstance.selectComponent('.timetable').addClass('scroll');
+    ownerInstance.selectComponent('.timetable').removeClass('move');
+    ownerInstance.callMethod('setData', {
+      isScroll: true,
+    })
+  }
+  else {
+    ownerInstance.selectComponent('.timetable').removeClass('scroll');
+    ownerInstance.selectComponent('.timetable').removeClass('move');
+    ownerInstance.callMethod('setData', {
+      isScroll: false,
+    })
+  }
+}
+
+var mode = 'still';
+var changeModeTimeout;
+
+var changeMode = function(event, ownerInstance) {
+  if (isMove) {
+    ownerInstance.callMethod('setData', {
+      scrollTop
+    });
+    changeModeTimeout = ownerInstance.setTimeout(changeModeChild, 50, 'move', ownerInstance);
+  }
+  else if (isScroll || isScrollMove) {
+    ownerInstance.clearTimeout(changeModeTimeout);
+    changeModeChild('scroll', ownerInstance);
+  }
+  else if (!(mode == 'scroll' && isTouch)) {
+    ownerInstance.callMethod('setData', {
+      scrollTop
+    })
+    changeModeTimeout = ownerInstance.setTimeout(changeModeChild, 50, 'still', ownerInstance)
+  };
+};
+
+var bindChange = function(event, ownerInstance) {
+  ownerInstance.triggerEvent('change', event.detail)
+};
+
+
+module.exports = {
+  onScrollMoveStart: onScrollMoveStart,
+  onScrollMoveEnd: onScrollMoveEnd,
+  onTouchStart: onTouchStart,
+  onTouchEnd: onTouchEnd,
+  onScroll: onScroll,
+  bindChange: bindChange,
+  onMoveStart: onMoveStart,
+  onMoveEnd: onMoveEnd,
+};
