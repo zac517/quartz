@@ -47,6 +47,7 @@ $font-color: rgba(0, 0, 0, 0.5);
   height: $table-header-height;
   width: 100%;
   background-color: white;
+  flex-shrink: 0;
 
   .weekday {
     flex-grow: 1;

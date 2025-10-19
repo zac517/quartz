@@ -11,5 +11,12 @@
       <span class="iconfont icon-menu" bind:tap="test2"></span>
     </view>
   </view>
-  <timetable bindchange="onSwiperChange" current="{{ currentIndex }}" style="flex-grow: 1;"></timetable>
+  <timetable 
+    bindchange="onSwiperChange" 
+    current="{{currentIndex}}" 
+    weeks="{{weeks}}"
+    colors="{{colors}}"
+    timeSlots="{{timeSlots}}"
+    style="flex-grow: 1;"
+  ></timetable>
 </view>

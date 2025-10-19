@@ -1,4 +1,20 @@
-var isMove = false;
+// 常量定义
+var SCROLL_END_DELAY = 100;      // 滚动结束延迟
+var MODE_CHANGE_DELAY = 50;      // 模式切换延迟
+
+// 全局状态变量
+var isMove = false;              // 是否正在切换周
+var isScrollMove = false;        // 是否正在滚动swiper
+var isTouch = false;             // 是否正在触摸
+var isScroll = false;            // 是否正在滚动
+var scrollTop = 0;               // 当前滚动位置
+var mode = 'still';              // 当前模式: 'still' | 'move' | 'scroll'
+var scrollTimeout;               // 滚动结束定时器
+var changeModeTimeout;           // 模式切换定时器
+
+/**
+ * Swiper 开始滑动
+ */
 var onMoveStart = function(event, ownerInstance) {
   if (!isMove) {
     isMove = true;
@@ -6,12 +22,17 @@ var onMoveStart = function(event, ownerInstance) {
   }
 };
 
+/**
+ * Swiper 滑动结束
+ */
 var onMoveEnd = function(event, ownerInstance) {
   isMove = false;
   changeMode(event, ownerInstance);
 };
 
-var isScrollMove = false;
+/**
+ * 垂直 Swiper 开始滑动
+ */
 var onScrollMoveStart = function(event, ownerInstance) {
   if (!isScrollMove) {
     isScrollMove = true;
@@ -19,35 +40,52 @@ var onScrollMoveStart = function(event, ownerInstance) {
   }
 };
 
+/**
+ * 垂直 Swiper 滑动结束
+ */
 var onScrollMoveEnd = function(event, ownerInstance) {
   isScrollMove = false;
   changeMode(event, ownerInstance);
 };
 
-var isTouch = false;
+/**
+ * 触摸开始
+ */
 var onTouchStart = function() {
   isTouch = true;
 };
 
+/**
+ * 触摸结束
+ */
 var onTouchEnd = function(event, ownerInstance) {
   isTouch = false;
   changeMode(event, ownerInstance);
 };
 
-var isScroll = false;
-var scrollTop = 0;
-var scrollTimeout;
-
+/**
+ * 滚动结束处理
+ */
 var onScrollEnd = function(event, ownerInstance) {
   isScroll = false;
   changeMode(event, ownerInstance);
-}
+};
 
+/**
+ * 滚动事件处理
+ * 同步侧边栏位置
+ */
 var onScroll = function(event, ownerInstance) {
+  if (!ownerInstance) {
+    return;
+  }
+  
   var instance = ownerInstance.selectComponent('.column-content');
-  instance.setStyle({
-    "transform": 'translateY(-' + event.detail.scrollTop + 'px'
-  });
+  if (instance) {
+    instance.setStyle({
+      "transform": 'translateY(-' + event.detail.scrollTop + 'px)'
+    });
+  }
 
   if (!isScroll) {
     isScroll = true;
@@ -56,61 +94,93 @@ var onScroll = function(event, ownerInstance) {
 
   ownerInstance.clearTimeout(scrollTimeout);
   scrollTop = event.detail.scrollTop;
-  scrollTimeout = ownerInstance.setTimeout(onScrollEnd, 100, event, ownerInstance);
+  scrollTimeout = ownerInstance.setTimeout(onScrollEnd, SCROLL_END_DELAY, event, ownerInstance);
 };
 
-var changeModeChild = function(md, ownerInstance) {
-  mode = md;
-  if (mode == 'move') {
-    ownerInstance.selectComponent('.timetable').removeClass('scroll');
-    ownerInstance.selectComponent('.timetable').addClass('move');
-    ownerInstance.callMethod('setData', {
-      isScroll: false,
-    })
+/**
+ * 应用模式到组件
+ * @param {string} targetMode - 目标模式 'still' | 'move' | 'scroll'
+ * @param {object} ownerInstance - 组件实例
+ */
+var applyMode = function(targetMode, ownerInstance) {
+  if (!ownerInstance) {
+    return;
   }
-  else if (mode == 'scroll') {
-    ownerInstance.selectComponent('.timetable').addClass('scroll');
-    ownerInstance.selectComponent('.timetable').removeClass('move');
+  
+  mode = targetMode;
+  var timetableElement = ownerInstance.selectComponent('.timetable');
+  
+  if (!timetableElement) {
+    return;
+  }
+  
+  if (mode === 'move') {
+    // 移动模式: 隐藏滚动样式，禁用滚动区域的指针事件
+    timetableElement.removeClass('scroll');
+    timetableElement.addClass('move');
     ownerInstance.callMethod('setData', {
-      isScroll: true,
-    })
+      isScroll: false
+    });
+  }
+  else if (mode === 'scroll') {
+    // 滚动模式: 显示滚动样式，启用侧边栏
+    timetableElement.addClass('scroll');
+    timetableElement.removeClass('move');
+    ownerInstance.callMethod('setData', {
+      isScroll: true
+    });
   }
   else {
-    ownerInstance.selectComponent('.timetable').removeClass('scroll');
-    ownerInstance.selectComponent('.timetable').removeClass('move');
+    // 静止模式: 移除所有模式类
+    timetableElement.removeClass('scroll');
+    timetableElement.removeClass('move');
     ownerInstance.callMethod('setData', {
-      isScroll: false,
-    })
-  }
-}
-
-var mode = 'still';
-var changeModeTimeout;
-
-var changeMode = function(event, ownerInstance) {
-  if (isMove) {
-    ownerInstance.callMethod('setData', {
-      scrollTop
+      isScroll: false
     });
-    changeModeTimeout = ownerInstance.setTimeout(changeModeChild, 50, 'move', ownerInstance);
+  }
+};
+
+/**
+ * 模式切换逻辑
+ * 根据当前状态决定应该进入哪个模式
+ */
+var changeMode = function(event, ownerInstance) {
+  if (!ownerInstance) {
+    return;
+  }
+  
+  if (isMove) {
+    // 正在切换周，进入移动模式
+    ownerInstance.callMethod('setData', {
+      scrollTop: scrollTop
+    });
+    changeModeTimeout = ownerInstance.setTimeout(applyMode, MODE_CHANGE_DELAY, 'move', ownerInstance);
   }
   else if (isScroll || isScrollMove) {
+    // 正在滚动，进入滚动模式
     ownerInstance.clearTimeout(changeModeTimeout);
-    changeModeChild('scroll', ownerInstance);
+    applyMode('scroll', ownerInstance);
   }
-  else if (!(mode == 'scroll' && isTouch)) {
+  else if (!(mode === 'scroll' && isTouch)) {
+    // 既不在移动也不在滚动，且不是在滚动模式下触摸，进入静止模式
     ownerInstance.callMethod('setData', {
-      scrollTop
-    })
-    changeModeTimeout = ownerInstance.setTimeout(changeModeChild, 50, 'still', ownerInstance)
-  };
+      scrollTop: scrollTop
+    });
+    changeModeTimeout = ownerInstance.setTimeout(applyMode, MODE_CHANGE_DELAY, 'still', ownerInstance);
+  }
 };
 
+/**
+ * Swiper change 事件
+ * 触发外部的 change 事件
+ */
 var bindChange = function(event, ownerInstance) {
-  ownerInstance.triggerEvent('change', event.detail)
+  if (ownerInstance) {
+    ownerInstance.triggerEvent('change', event.detail);
+  }
 };
 
-
+// 导出函数
 module.exports = {
   onScrollMoveStart: onScrollMoveStart,
   onScrollMoveEnd: onScrollMoveEnd,
@@ -119,5 +189,5 @@ module.exports = {
   onScroll: onScroll,
   bindChange: bindChange,
   onMoveStart: onMoveStart,
-  onMoveEnd: onMoveEnd,
+  onMoveEnd: onMoveEnd
 };
