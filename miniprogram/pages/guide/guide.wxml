@@ -1,21 +1,27 @@
 <!--pages/guide/guide.wxml-->
 <view class="container" style="--color: {{colors[currentIndex]}}; --bar-height: {{barHeight}}px">
   <image wx:for="{{ images }}" wx:key="index" data-index="{{ index }}" bindload="showImg" class="guide-img {{ item.loaded ? '' : 'op'}} {{currentIndex != index ? 'op' : ''}}" src="{{ item.src }}" style="{{ item.style }}"></image>
-  <view class="guide-img  {{currentIndex != 2 ? 'op' : ''}}"  style="opacity: 0.15;"><text class="iconfont icon-cloud icon-img"></text></view>
+  <view class="guide-img  {{currentIndex != 2 ? 'op' : ''}}" style="opacity: 0.15;"><text class="iconfont icon-cloud icon-img"></text></view>
 
-  <view class="guide-bar">
-    <view class="bar-buttons">
-      <view wx:if="{{currentIndex < colors.length - 1 }}" bind:tap="skip">跳过</view>
+  <view class="z-row">
+    <view class="z-row-right">
+      <view class="z-text-button" wx:if="{{currentIndex < colors.length - 1 }}" bind:tap="skip">跳过</view>
     </view>
   </view>
-  <swiper class="guide-swiper" bindchange="handleChange" current="{{ currentIndex }}">
+  <swiper class="guide-swiper" bindchange="handleChange" current="{{ currentIndex }}" duration="300">
     <swiper-item>
       <swiper vertical="true" style="height: 100%;">
         <swiper-item>
           <view class="guide-content {{currentIndex != 0 ? 'op' : ''}}">
-            <view class="guide-title text-line">欢迎来到<text class="colored">{{"\n"}}Quartz</text></view>
-            <view class="guide-desc text-line"><text class="colored">课表管理</text>、<text class="colored">事项</text>、<text class="colored">待办</text>现已可用。</view>
-            <view class="guide-desc text-line">点击下一步。</view>
+            <view class="guide-content-text">
+              <view class="guide-title">欢迎来到<text class="colored">{{"\n"}}Quartz</text></view>
+              <view class="guide-desc">
+                <text class="colored">课表管理</text>、<text class="colored">事项</text>、<text class="colored">待办</text>现已可用。
+              </view>
+              <view class="guide-desc">点击下一步。</view>
+            </view>
+            <view class="z-row">
+            </view>
           </view>
         </swiper-item>
       </swiper>
@@ -24,12 +30,17 @@
       <swiper vertical="true" style="height: 100%;">
         <swiper-item>
           <view class="guide-content {{currentIndex != 1 ? 'op' : ''}}">
-            <view class="guide-title text-line">登录<text class="colored">{{"\n"}}校园账号</text></view>
-            <view class="guide-desc text-line">登录后启用<text class="colored">课表导入</text>、<text class="colored">校园信息查询</text>等。</view>
-            <view class="guide-desc text-line">数据获取不经过任何私人服务器。</view>
-            <view class="bar-buttons bottom-buttons">
-              <view wx:if="{{ isLogin }}"  class="guide-button colored disabled">已登录</view>
-              <view wx:else class="guide-button colored" bind:tap="login">登录</view>
+            <view class="guide-content-text">
+              <view class="guide-title">登录<text class="colored">{{"\n"}}校园账号</text></view>
+              <view class="guide-desc">登录后启用<text class="colored">课表导入</text>、<text class="colored">校园信息查询</text>等。</view>
+              <view class="guide-desc">数据获取不经过任何私人服务器。</view>
+            </view>
+            <view class="z-row">
+              <view class="z-row-right">
+                <view class="z-text-button {{ isLogin ? 'disabled' : ''}}" bind:tap="{{ isLogin ? '' : 'login'}}">
+                  <view class="guide-button colored">{{ isLogin ? '已登录' : '登录'}}</view>
+                </view>
+              </view>
             </view>
           </view>
         </swiper-item>
@@ -39,24 +50,32 @@
       <swiper vertical="true" style="height: 100%;">
         <swiper-item>
           <view class="guide-content {{currentIndex != 2 ? 'op' : ''}}">
-            <view class="guide-title text-line">开启<text class="colored">{{"\n"}}云服务</text></view>
-            <view class="guide-desc text-line">授权后启用<text class="colored">数据备份</text>、<text class="colored">课表分享</text>等。</view>
-            <view class="guide-desc text-line">授权代表您已知晓数据将被远程储存。</view>
-            <view class="guide-desc text-line">Quartz 不会滥用您的数据。</view>
-            <view class="bar-buttons  bottom-buttons">
-              <view class="guide-button colored" bind:tap="authorize">授权</view>
+            <view class="guide-content-text">
+              <view class="guide-title">开启<text class="colored">{{"\n"}}云服务</text></view>
+              <view class="guide-desc">授权后启用<text class="colored">数据备份</text>、<text class="colored">课表分享</text>等。</view>
+              <view class="guide-desc">授权代表您已知晓数据将被远程储存。</view>
+              <view class="guide-desc">Quartz 不会滥用您的数据。</view>
+            </view>
+            <view class="z-row">
+              <view class="z-row-right">
+                <view class="z-text-button {{ useCloud ? 'disabled' : ''}}" bind:tap="auth">
+                  <view class="guide-button colored">{{ useCloud ? '已开启' : '开启'}}</view>
+                </view>
+              </view>
             </view>
           </view>
         </swiper-item>
       </swiper>
     </swiper-item>
   </swiper>
-  <view class="guide-bar">
-    <view class="indicator">
-      <view wx:for="{{colors}}" wx:key="index" class="indicator-item" style="flex-grow: {{currentIndex == index ? '1' : '0'}};background-color: {{currentIndex >= index ? colors[currentIndex] : ''}};"></view>
+  <view class="z-row">
+    <view class="z-row-left">
+      <view class="indicator">
+        <view wx:for="{{colors}}" wx:key="index" class="indicator-item" style="flex-grow: {{currentIndex == index ? '1' : '0'}};background-color: {{currentIndex >= index ? colors[currentIndex] : ''}};"></view>
+      </view>
     </view>
-    <view class="bar-buttons">
-      <view bind:tap="next">
+    <view class="z-row-right">
+      <view class="z-text-button" bind:tap="next">
         {{currentIndex < colors.length - 1 ? '下一步' : '进入'}}
       </view>
     </view>

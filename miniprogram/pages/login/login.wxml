@@ -1,17 +1,17 @@
 <!--login.wxml-->
 <view class="container">
-  <image class="login-img" mode="widthFix" src="cloud://cloud1-5g87ixg4fca1088e.636c-cloud1-5g87ixg4fca1088e-1332869741/bingtang.jpg"></image>
+  <image class="login-img {{ loaded ? '' : 'op'}}" mode="widthFix" src="cloud://cloud1-5g87ixg4fca1088e.636c-cloud1-5g87ixg4fca1088e-1332869741/bingtang.jpg" bindload="showImg"></image>
   <swiper vertical="true" style="height: 100%;">
     <swiper-item>
-      <view class="column-center">
-        <view class="form-title">登录</view>
-        <input class="form-input" model:value="{{username}}" placeholder="账号" confirm-type="next" cursor-spacing="20" />
-        <input class="form-input" model:value="{{password}}" placeholder="密码" confirm-type="next" password cursor-spacing="20" />
+      <view class="form" tabindex="0">
+        <view class="form-title">统一身份认证</view>
+        <input data-id="{{0}}" focus="{{ index == 0 }}" class="form-input" model:value="{{username}}" placeholder="学号" confirm-type="next" cursor-spacing="20" bindblur="unInput" data-hint="{{unHint}}" bindconfirm="inputConfirm" 	bindfocus="unFocus" />
+        <input data-id="{{1}}" focus="{{ index == 1 }}" class="form-input" model:value="{{password}}" placeholder="密码" confirm-type="next" password cursor-spacing="20" bindblur="pwInput" data-hint="{{pwHint}}" bindconfirm="inputConfirm"  	bindfocus="pwFocus" />
         <view class="form-row">
-          <input class="form-input" model:value="{{varCode}}" placeholder="验证码" confirm-type="done" cursor-spacing="20" />
-          <image mode="heightFix" class="varcode" src="{{imageUrl}}" />
+          <input data-id="{{2}}" focus="{{ index == 2 }}" class="form-input" model:value="{{varCode}}" placeholder="验证码" confirm-type="done" cursor-spacing="20" bindblur="vcInput" data-hint="{{vcHint}}" bindconfirm="inputConfirm"  	bindfocus="vcFocus" />
+          <image mode="heightFix" class="varcode" src="{{imageUrl}}" bind:tap="freshVarCode" />
         </view>
-        <view class="form-btn" bind:tap="test">登录</view>
+        <view class="form-btn {{available ? '' : 'disabled' }}" bind:tap="login">登录</view>
       </view>
     </swiper-item>
   </swiper>

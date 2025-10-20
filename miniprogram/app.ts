@@ -5,7 +5,7 @@ App({
   onLaunch() {
     wx.onBeforeAppRoute(res => {
       const initFlag = app.initFlag.value;
-      if (res.path !== 'pages/guide/guide' && !initFlag) {
+      if (res.path !== 'pages/guide/guide' && res.path !== 'pages/login/login' && !initFlag) {
         // 重写路由事件
         wx.rewriteRoute({
           url: '/pages/guide/guide',

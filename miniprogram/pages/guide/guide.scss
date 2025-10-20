@@ -1,20 +1,20 @@
-/* pages/guide/guide.wxss */
 $animation-duration: 1s;
 
 .container {
   margin-top: calc(var(--bar-height) + 44px);
   height: calc(100vh - var(--bar-height) - 44px);
   padding: 40px 40px 80px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
 }
 
 .guide-swiper {
-  height: calc(100% - 120px);
-  margin: 40px 0;
+  flex-grow: 1;
 }
 
 .guide-content {
   transition: opacity 0.2s;
-  height: 240px;
   position: absolute;
   bottom: 0;
   width: 100%;
@@ -24,8 +24,8 @@ $animation-duration: 1s;
   opacity: 0 !important;
 }
 
-.text-line {
-  animation: up 0.5s cubic-bezier(0.67, -0.13, 0.64, 1.25) forwards;
+.guide-content-text view {
+  animation: up 0.3s cubic-bezier(0.67, -0.13, 0.64, 1.25) forwards;
   transform: translateY(20px);
   opacity: 0;
 }
@@ -42,25 +42,20 @@ $animation-duration: 1s;
   }
 }
 
-.op .text-line {
+.op .guide-content-text view {
   animation: none;
 }
 
-.text-line:nth-child(2) {
+.guide-content-text view:nth-child(2) {
   animation-delay: 0.1s;
 }
 
-.text-line:nth-child(3) {
+.guide-content-text view:nth-child(3) {
   animation-delay: 0.2s;
 }
 
-.text-line:nth-child(4) {
+.guide-content-text view:nth-child(4) {
   animation-delay: 0.3s;
-}
-
-.guide-bar {
-  display: flex;
-  align-items: center;
 }
 
 .indicator {
@@ -75,15 +70,6 @@ $animation-duration: 1s;
   background-color: rgba(0, 0, 0, 0.2);
   border-radius: 4px;
   transition: 0.2s;
-}
-
-.bar-buttons {
-  display: inline-flex;
-  gap: 20px;
-  flex: 1;
-  justify-content: flex-end;
-  height: 20px;
-  width: 100%;
 }
 
 .guide-title {
@@ -130,6 +116,6 @@ $animation-duration: 1s;
   color: #165DFF;
 }
 
-.disabled {
-  opacity: 0.5;
+.guide-content-text {
+  height: 180px;
 }

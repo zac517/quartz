@@ -1,0 +1,49 @@
+$text-xs: 0.75rem; 
+$text-sm: 0.875rem;
+$text-base: 1rem;  
+$text-md: 1.125rem;
+$text-lg: 1.25rem; 
+$text-xl: 1.5rem;  
+$text-2xl: 1.875rem;
+$text-3xl: 2.25rem;
+
+$row-height: 40px;
+
+.z-row {
+  height: $row-height;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.z-row-left {
+  display: inline-flex;
+  gap: 20px;
+  flex: 1;
+  justify-content: flex-start;
+}
+
+.z-row-right {
+  display: inline-flex;
+  gap: 20px;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.z-text-button {
+  height: $row-height;
+  border-radius: $row-height / 2;
+  line-height: $row-height;
+  padding: 0 12px;
+  transition: all 0.1s;
+}
+
+.z-text-button:active {
+  background-color: rgba(0, 0, 0, 0.1);
+  transition: none;
+}
+
+.z-text-button.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}

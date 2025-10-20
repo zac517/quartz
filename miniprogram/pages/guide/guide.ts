@@ -39,11 +39,16 @@ Page({
     const { isLogin, useCloud } = app;
     this.setData({
       barHeight: wx.getWindowInfo().statusBarHeight,
-
+      isLogin: isLogin.value,
+      useCloud: useCloud.value,
     });
     wx.getImageInfo({
       src: 'cloud://cloud1-5g87ixg4fca1088e.636c-cloud1-5g87ixg4fca1088e-1332869741/bingtang.jpg'
     })
+  },
+
+  onshow() {
+
   },
 
   handleChange(e: WechatMiniprogram.SwiperChange) {
@@ -51,6 +56,7 @@ Page({
       currentIndex: e.detail.current
     })
   },
+
   next() {
     if (this.data.currentIndex < this.data.colors.length - 1) {
       this.setData({
@@ -61,6 +67,7 @@ Page({
       this.skip();
     }
   },
+
   skip() {
     const { initFlag } = app;
     initFlag.value = true;
@@ -71,7 +78,22 @@ Page({
 
   login() {
     wx.navigateTo({
-      url: '/pages/login/login'
+      url: '/pages/login/login',
+      events: {
+        isLogin: () => {
+          this.setData({
+            isLogin: true,
+          })
+        }
+      }
     })
   },
+
+  auth() {
+    const { useCloud } = app;
+    useCloud.value = true;
+    this.setData({
+      useCloud: useCloud.value,
+    });
+  }
 })

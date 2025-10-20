@@ -7,25 +7,88 @@ interface Cookie {
   domain: string;
   path: string;
   expires?: Date;
-  httpOnly: boolean;
   secure: boolean;
 }
 
 /**
- * Cookie 管理器
+ * 独立工具函数
+ */
+function parseUrl(url: string): { protocol: string; hostname: string; pathname: string } {
+  const urlRegex = /^([a-zA-Z][a-zA-Z0-9+.-]*:)?\/{0,2}([^/?#]+)?([^?#]*)?/;
+  const match = url.match(urlRegex);
+
+  if (!match || !match[2]) throw new Error(`Invalid URL: ${url}`);
+
+  let protocol = match[1] || 'http:';
+  if (!protocol.endsWith(':')) protocol += ':';
+
+  const hostname = match[2].split('@').pop() || '';
+  const pathname = match[3] || '/';
+
+  return { protocol, hostname, pathname };
+}
+
+export function cookieStrToObj(cookieStr: string): { [key: string]: string } {
+  const obj: { [key: string]: string } = {};
+  if (!cookieStr.trim()) return obj;
+
+  splitByTopLevelSeparator(cookieStr, ';').forEach(pair => {
+    const trimmed = pair.trim();
+    if (!trimmed) return;
+
+    const equalIndex = trimmed.indexOf('=');
+    if (equalIndex <= 0) return;
+
+    const key = trimmed.slice(0, equalIndex).trim();
+    const value = trimmed.slice(equalIndex + 1).trim();
+    obj[key] = value;
+  });
+
+  return obj;
+}
+
+function splitByTopLevelSeparator(str: string, separator: string): string[] {
+  const result = [];
+  let current = [];
+  let inQuotes = false;
+
+  for (const char of str) {
+    if (char === '"') {
+      inQuotes = !inQuotes;
+      current.push(char);
+      continue;
+    }
+    if (char === separator && !inQuotes) {
+      result.push(current.join('').trim());
+      current = [];
+      continue;
+    }
+    current.push(char);
+  }
+
+  if (current.length > 0) result.push(current.join('').trim());
+  return result;
+}
+
+function inferDefaultPath(pathname: string): string {
+  if (!pathname || pathname === '/') return '/';
+  const lastSlashIndex = pathname.lastIndexOf('/');
+  return lastSlashIndex === 0 ? '/' : pathname.slice(0, lastSlashIndex + 1);
+}
+
+/**
+ * Cookie 管理器（单例）
  */
 class CookieStore {
-  private static instance: CookieStore; // 静态实例存储
+  private static instance: CookieStore;
   private cookies: Cookie[] = [];
   private readonly STORAGE_KEY = '__miniprogram_cookies__';
 
-  // 私有构造函数
   private constructor() {
     this.loadFromStorage();
-    this.cleanExpired(); // 初始化时清理过期 Cookie
+    this.cleanExpired();
   }
 
-  // 获取唯一单例实例
   public static getInstance(): CookieStore {
     if (!CookieStore.instance) {
       CookieStore.instance = new CookieStore();
@@ -33,7 +96,6 @@ class CookieStore {
     return CookieStore.instance;
   }
 
-  /** 从本地加载 Cookie */
   private loadFromStorage(): void {
     try {
       const stored = wx.getStorageSync(this.STORAGE_KEY);
@@ -48,7 +110,6 @@ class CookieStore {
     }
   }
 
-  /** 保存 Cookie 到本地存储 */
   private saveToStorage(): void {
     try {
       wx.setStorageSync(this.STORAGE_KEY, JSON.stringify(this.cookies));
@@ -57,133 +118,95 @@ class CookieStore {
     }
   }
 
-  /** 清理过期 Cookie */
   private cleanExpired(): void {
     const now = new Date();
     this.cookies = this.cookies.filter(c => !c.expires || c.expires > now);
   }
 
-  /** 
-   * 解析 set-cookie 头部
-   * 兼容标准分号分隔和非标准逗号分隔的 Cookie
-   */
-  setFromResponse(header: Record<string, any>, url: string): void {
-    let setCookieHeaders: string[] = [];
+  public setFromResponse(header: Record<string, any>, url: string): void {
+    const setCookieHeaders = this.extractSetCookieHeaders(header);
+    const processedCookies = this.splitCookieHeaders(setCookieHeaders);
 
-    // 处理 set-cookie 头部，兼容数组和字符串形式
-    if (Array.isArray(header['set-cookie'])) {
-      setCookieHeaders = header['set-cookie'];
-    } else if (header['set-cookie']) {
-      setCookieHeaders = [header['set-cookie']];
-    }
-
-    // 处理可能用逗号分隔多个 Cookie 的情况
-    const processedHeaders: string[] = [];
-    setCookieHeaders.forEach(header => {
-      const cookies = this.splitCookieHeader(header);
-      processedHeaders.push(...cookies);
-    });
-
-    processedHeaders.forEach(cookieStr => {
+    processedCookies.forEach(cookieStr => {
       const cookie = this.parseCookie(cookieStr, url);
-      if (cookie) {
-        // 替换同名同域同路径的旧 Cookie
-        this.cookies = this.cookies.filter(c =>
-          !(c.name === cookie.name && c.domain === cookie.domain && c.path === cookie.path)
-        );
-        this.cookies.push(cookie);
-      }
+      if (cookie) this.upsertCookie(cookie);
     });
 
     this.cleanExpired();
     this.saveToStorage();
   }
 
-  /**
-   * 分割 Cookie 头部字符串为单个 Cookie 数组
-   * 兼容分号(;)和逗号(,)两种分隔符，忽略引号内的分隔符
-   */
-  public splitCookieHeader(header: string): string[] {
-    const cookies = [];
-    let currentCookie = [];
-    let inQuotes = false;
+  /** 核心修复：统一响应头字段名大小写 */
+  private extractSetCookieHeaders(header: Record<string, any>): string[] {
+    // 字段名转为小写映射
+    const lowerCaseHeader: Record<string, any> = {};
+    Object.entries(header).forEach(([key, value]) => {
+      lowerCaseHeader[key.toLowerCase()] = value;
+    });
 
-    for (let i = 0; i < header.length; i++) {
-      const char = header[i];
-
-      if (char === '"') {
-        inQuotes = !inQuotes;
-        currentCookie.push(char);
-        continue;
-      }
-
-      if ((char === ';' || char === ',') && !inQuotes) {
-        cookies.push(currentCookie.join('').trim());
-        currentCookie = [];
-        continue;
-      }
-
-      currentCookie.push(char);
+    if (Array.isArray(lowerCaseHeader['set-cookie'])) {
+      return lowerCaseHeader['set-cookie'];
+    } else if (lowerCaseHeader['set-cookie']) {
+      return [lowerCaseHeader['set-cookie']];
     }
-
-    if (currentCookie.length > 0) {
-      cookies.push(currentCookie.join('').trim());
-    }
-
-    return cookies;
+    return [];
   }
 
-  /** 解析 Cookie 字符串 */
+  private splitCookieHeaders(headers: string[]): string[] {
+    const result: string[] = [];
+    headers.forEach(header => {
+      splitByTopLevelSeparator(header, ',').forEach(cookieStr => {
+        if (cookieStr.trim()) result.push(cookieStr.trim());
+      });
+    });
+    return result;
+  }
+
   private parseCookie(cookieStr: string, url: string): Cookie | null {
     try {
-      // 捕获 parseUrl 可能抛出的错误
-      const { hostname } = parseUrl(url);
-      const parts = cookieStr.split(';').map(p => p.trim());
+      const { hostname, pathname } = parseUrl(url);
+      const parts = splitByTopLevelSeparator(cookieStr, ';')
+        .map(p => p.trim())
+        .filter(p => p);
+
       const [nameValue] = parts;
       if (!nameValue) return null;
 
-      // 处理值中包含等号的情况
-      const [name, ...valueParts] = nameValue.split('=');
-      const value = valueParts.join('=').replace(/^"/, '').replace(/"$/, '');
+      const equalIndex = nameValue.indexOf('=');
+      if (equalIndex === -1) return null;
+      const name = nameValue.slice(0, equalIndex).trim();
+      const value = nameValue.slice(equalIndex + 1).trim().replace(/^"/, '').replace(/"$/, '');
 
       const cookie: Cookie = {
         name,
         value,
         domain: hostname,
-        path: '/',
-        httpOnly: false,
+        path: inferDefaultPath(pathname),
         secure: false
       };
 
-      // 解析 Cookie 扩展属性
       parts.slice(1).forEach(part => {
-        const [key, val] = part.split('=').map(p => p.toLowerCase());
+        const [key, val] = part.split('=').map(p => p.toLowerCase().trim());
         switch (key) {
           case 'domain':
             cookie.domain = val ? val.replace(/^"/, '').replace(/"$/, '') : hostname;
             break;
           case 'path':
-            cookie.path = val ? val.replace(/^"/, '').replace(/"$/, '') : '/';
+            cookie.path = val ? val.replace(/^"/, '').replace(/"$/, '') : inferDefaultPath(pathname);
             break;
           case 'expires':
             if (val) {
-              const rawDate = val.replace(/^"/, '').replace(/"$/, '');
-              const expiresDate = new Date(rawDate);
-              // 校验日期是否有效（排除 Invalid Date）
-              cookie.expires = !isNaN(expiresDate.getTime()) ? expiresDate : undefined;
+              const date = new Date(val.replace(/^"/, '').replace(/"$/, ''));
+              cookie.expires = !isNaN(date.getTime()) ? date : undefined;
             }
             break;
           case 'max-age':
             if (val) {
-              const maxAgeSec = parseInt(val, 10);
-              // 校验 max-age 是否为有效数字（排除 NaN、负数）
-              if (!isNaN(maxAgeSec) && maxAgeSec >= 0) {
-                cookie.expires = new Date(Date.now() + maxAgeSec * 1000);
+              const maxAge = parseInt(val, 10);
+              if (!isNaN(maxAge) && maxAge >= 0) {
+                cookie.expires = new Date(Date.now() + maxAge * 1000);
               }
             }
-            break;
-          case 'httponly':
-            cookie.httpOnly = true;
             break;
           case 'secure':
             cookie.secure = true;
@@ -193,173 +216,131 @@ class CookieStore {
 
       return cookie;
     } catch (e) {
-      console.error('Failed to parse cookie:', e, 'Cookie string:', cookieStr, 'Url:', url);
+      console.error('Failed to parse cookie:', e, 'Cookie string:', cookieStr);
       return null;
     }
   }
 
-  /** 获取指定域名的非 HttpOnly Cookie */
-  getCookiesByDomain(domain: string): string {
+  private upsertCookie(newCookie: Cookie): void {
+    this.cookies = this.cookies.filter(c =>
+      !(c.name === newCookie.name && c.domain === newCookie.domain && c.path === newCookie.path)
+    );
+    this.cookies.push(newCookie);
+  }
+
+  public replaceCookiesByDomain(domain: string, cookieStr: string, originalUrl: string): void {
     this.cleanExpired();
-    return this.cookies
-      .filter(c => !c.httpOnly && this.isDomainMatch(c.domain, domain))
+    const newCookieObj = cookieStrToObj(cookieStr);
+    const { pathname, protocol } = parseUrl(originalUrl);
+    const isHttps = protocol === 'https:';
+
+    // 完整替换：先删除旧Cookie
+    this.cookies = this.cookies.filter(c => !this.isDomainMatch(c.domain, domain));
+
+    // 添加新Cookie
+    Object.entries(newCookieObj).forEach(([name, value]) => {
+      const oldCookie = this.getCookiesForUrl(originalUrl).find(c => c.name === name);
+      const newCookie: Cookie = {
+        name,
+        value,
+        domain,
+        path: oldCookie?.path || inferDefaultPath(pathname),
+        secure: oldCookie?.secure ?? isHttps,
+        expires: oldCookie?.expires
+      };
+      this.upsertCookie(newCookie);
+    });
+
+    this.saveToStorage();
+  }
+
+  private getCookiesForUrl(url: string): Cookie[] {
+    try {
+      this.cleanExpired();
+      const { protocol, hostname, pathname } = parseUrl(url);
+      return this.cookies.filter(c => {
+        if (c.expires && c.expires <= new Date()) return false;
+        if (c.secure && protocol !== 'https:') return false;
+        if (!this.isDomainMatch(c.domain, hostname)) return false;
+        return pathname.startsWith(c.path);
+      });
+    } catch (e) {
+      console.error('Failed to get cookies for url:', e, 'Url:', url);
+      return [];
+    }
+  }
+
+  public getCookiesStringByDomain(domain: string): string {
+    return this.getCookiesForDomain(domain)
       .map(c => `${c.name}=${c.value}`)
       .join('; ');
   }
 
-  /** 设置指定域名的 Cookie */
-  setCookieByDomain(domain: string, cookieStr: string): void {
+  private getCookiesForDomain(domain: string): Cookie[] {
     this.cleanExpired();
-    const cookie = this.parseCookie(cookieStr, `http://${domain}`);
-    if (cookie) {
-      this.cookies = this.cookies.filter(c =>
-        !(c.name === cookie.name && c.domain === cookie.domain && c.path === cookie.path)
-      );
-      this.cookies.push(cookie);
-      this.saveToStorage();
-    }
+    return this.cookies.filter(c => this.isDomainMatch(c.domain, domain));
   }
 
-  /** 检查域名匹配（支持子域名匹配） */
   private isDomainMatch(cookieDomain: string, targetDomain: string): boolean {
     const normalizedCookie = cookieDomain.startsWith('.') ? cookieDomain.slice(1) : cookieDomain;
     const normalizedTarget = targetDomain.startsWith('.') ? targetDomain.slice(1) : targetDomain;
     return normalizedTarget.endsWith(normalizedCookie) || normalizedTarget === normalizedCookie;
   }
 
-  /** 获取请求对应的 Cookie */
-  getForRequest(url: string): string {
-    try {
-      this.cleanExpired();
-      const { protocol, hostname, pathname } = parseUrl(url);
-      return this.cookies
-        .filter(c => {
-          if (c.expires && c.expires <= new Date()) return false;
-          if (c.secure && protocol !== 'https:') return false;
-          if (!this.isDomainMatch(c.domain, hostname)) return false;
-          if (!pathname.startsWith(c.path)) return false;
-          return true;
-        })
-        .map(c => `${c.name}=${c.value}`)
-        .join('; ');
-    } catch (e) {
-      console.error('Failed to get cookies for request:', e, 'Url:', url);
-      return '';
-    }
+  public getRequestCookies(url: string): string {
+    return this.getCookiesForUrl(url)
+      .map(c => `${c.name}=${c.value}`)
+      .join('; ');
   }
 
-  /** 清空所有 Cookie */
-  public clearAllCookies(): void {
+  public clearAll(): void {
     this.cookies = [];
     this.saveToStorage();
   }
 
-  /** 清理指定域名的 Cookie */
-  public clearCookiesByDomain(domain: string): void {
+  public clearByDomain(domain: string): void {
     this.cookies = this.cookies.filter(c => !this.isDomainMatch(c.domain, domain));
     this.saveToStorage();
   }
 }
 
-/** 
- * 解析 URL（提取协议、主机名、路径）
- * @throws {Error} 当URL格式无效或无法解析主机名时抛出错误
- */
-function parseUrl(url: string): { protocol: string; hostname: string; pathname: string } {
-  const urlRegex = /^([a-zA-Z][a-zA-Z0-9+.-]*:)?\/{0,2}([^/?#]+)?([^?#]*)?/;
-  const match = url.match(urlRegex);
-
-  if (!match) throw new Error(`Invalid URL format: ${url}`);
-  if (!match[2]) throw new Error(`Failed to resolve hostname from url: ${url}`);
-
-  // 处理协议
-  let protocol = match[1] || 'http:';
-  if (!protocol.endsWith(':')) protocol += ':';
-
-  // 移除可能的用户名密码前缀（如 user:pass@hostname）
-  let hostname = match[2].split('@').pop() || '';
-
-  // 处理路径
-  let pathname = match[3] || '/';
-  if (!pathname.startsWith('/')) pathname = `/${pathname}`;
-
-  return { protocol, hostname, pathname };
-}
-
-// 创建 CookieStore 单例实例（通过静态方法获取）
-const cookieStore = CookieStore.getInstance();
-
-/**
- * 按域名操作 Cookie 的便捷类
- */
-class cookies {
+/** Cookie操作工具类 */
+class CookieDomainHelper {
   private domain: string;
+  private originalUrl: string;
 
-  constructor(domain: string) {
+  constructor(domain: string, originalUrl: string) {
     this.domain = domain;
+    this.originalUrl = originalUrl;
   }
 
-  /**
-   * 通过赋值和读取此值设置/获取指定域的非 HttpOnly Cookie
-   */
   get cookie(): string {
-    return cookieStore.getCookiesByDomain(this.domain);
+    return CookieStore.getInstance().getCookiesStringByDomain(this.domain);
   }
 
   set cookie(value: string) {
-    cookieStore.setCookieByDomain(this.domain, value);
+    CookieStore.getInstance().replaceCookiesByDomain(this.domain, value, this.originalUrl);
   }
 }
 
-/**
- * 获取指定 URL 对应的 cookies 操作实例
- */
-export function getCookies(url: string): cookies {
+/** 对外导出工具函数 */
+export function getCookies(url: string): CookieDomainHelper {
   try {
     const { hostname } = parseUrl(url);
-    return new cookies(hostname);
+    return new CookieDomainHelper(hostname, url);
   } catch (e) {
-    throw new Error(`Failed to resolve domain from url: ${url}`);
+    console.error('Failed to resolve cookies for url:', e, 'Url:', url);
+    throw new Error(`Failed to resolve cookies for url: ${url}`);
   }
 }
 
-/**
- * 将 Cookie 字符串转为键值对对象
- */
-export function cookieStrToObj(cookieStr: string): { [key: string]: string } {
-  const cookieObj: { [key: string]: string } = {};
-  if (!cookieStr?.trim()) return cookieObj;
-
-  const validPairs = cookieStore.splitCookieHeader(cookieStr)
-    .filter(pair => pair?.trim())
-    .map(pair => pair.trim());
-
-  validPairs.forEach(pair => {
-    const equalIndex = pair.indexOf('=');
-    if (equalIndex <= 0) return;
-
-    const key = pair.slice(0, equalIndex).trim();
-    const value = pair.slice(equalIndex + 1).trim();
-    if (key) cookieObj[key] = value;
-  });
-
-  return cookieObj;
-}
-
-/**
- * 将 Cookie 对象转换为标准 Cookie 字符串
- */
 export function cookieObjToStr(cookieObj: { [key: string]: string }): string {
   return Object.entries(cookieObj)
-    .map(([key, value]) => {
-      // 对值进行简单转义，避免包含分号等特殊字符
-      const escapedValue = String(value).replace(/;/g, encodeURIComponent);
-      return `${key}=${escapedValue}`;
-    })
+    .map(([key, value]) => `${key}=${String(value).replace(/;/g, encodeURIComponent)}`)
     .join('; ');
 }
 
-/** 请求配置接口 */
+/** 请求包装器 */
 interface CookieRequestOption<T> {
   url: string;
   header?: Record<string, any>;
@@ -368,14 +349,10 @@ interface CookieRequestOption<T> {
   complete?: (res: any) => void;
 }
 
-/** 请求结果接口 */
 interface CookieRequestResult {
   header: Record<string, any>;
 }
 
-/**
- * 请求函数包装器，为请求函数添加 Cookie 自动管理能力
- */
 export function withCookie<
   TResult extends CookieRequestResult,
   TOption extends CookieRequestOption<TResult>,
@@ -385,29 +362,24 @@ export function withCookie<
 ) {
   return function wrappedRequest(option: TOption): TReturn | void {
     const { url, header = {}, success, fail, complete } = option;
-
-    // 校验核心属性
     if (!url) {
-      const errMsg = 'cookie: fail url is required';
-      fail?.({ errMsg });
-      complete?.({ errMsg });
+      const err = { errMsg: 'cookie: url is required' };
+      fail?.(err);
+      complete?.(err);
       return;
     }
 
-    // 请求前注入 Cookie
-    const requestCookies = cookieStore.getForRequest(url);
+    const requestCookies = CookieStore.getInstance().getRequestCookies(url);
     const injectedHeader = {
       ...header,
       ...(requestCookies ? { Cookie: requestCookies } : {})
     };
 
-    // 响应后解析 set-cookie
     const wrappedSuccess = (res: TResult) => {
-      cookieStore.setFromResponse(res.header, url);
+      CookieStore.getInstance().setFromResponse(res.header, url);
       success?.(res);
     };
 
-    // 调用原始请求函数
     return requestFunc({
       ...option,
       header: injectedHeader,

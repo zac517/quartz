@@ -1,6 +1,6 @@
-import {request} from '../request'
+import { request } from '../request'
 import CryptoJS from 'crypto-js'
-import {getCookies, cookieStrToObj} from '../../utils/cookie'
+import { getCookies, cookieStrToObj, cookieObjToStr } from '../../utils/cookie'
 
 /**
  * 网页用的加密函数
@@ -9,9 +9,8 @@ function encryptionPwd(pwd: string) {
   var secretKey = cookieStrToObj(getCookies('https://cas.hfut.edu.cn/').cookie)["LOGIN_FLAVORING"] || '',
     key = CryptoJS.enc.Utf8.parse(secretKey),
     password = CryptoJS.enc.Utf8.parse(pwd),
-    encrypted = CryptoJS.AES.encrypt(password, key, {mode: CryptoJS.mode.ECB, padding: CryptoJS.pad.Pkcs7}),
+    encrypted = CryptoJS.AES.encrypt(password, key, { mode: CryptoJS.mode.ECB, padding: CryptoJS.pad.Pkcs7 }),
     encryptedPwd = encrypted.toString();
-    console.log(getCookies('https://cas.hfut.edu.cn/').cookie, cookieStrToObj(getCookies('https://cas.hfut.edu.cn/').cookie), 'secretKey', secretKey)
   return encryptedPwd;
 }
 
@@ -38,22 +37,23 @@ interface LoginOptions {
   password: string
 }
 
-
-
-
 /**
  * 登录统一身份认证平台
  * @param options 登录选项
  */
 export async function login(options: LoginOptions) {
-  const {username, capcha, password: pwd } = options;
+  const { username, capcha, password: pwd } = options;
+
+  // 删除之前的令牌
+  const cookie = getCookies('https://cas.hfut.edu.cn/cas/');
+  const {TGC, ...newCookie } = cookieStrToObj(cookie.cookie);
+  cookie.cookie = cookieObjToStr(newCookie);
 
   // 获取 CAS 的 SESSION 和 execution
   const response = await request({
     url: 'https://cas.hfut.edu.cn/cas/login',
   })
   const execution = getExecution(response.data as string);
-  console.log('execution:', execution)
 
   // 获取 JSESSIONID 和 LOGIN_FLAVORING
   await request({
@@ -65,8 +65,8 @@ export async function login(options: LoginOptions) {
 
   // 加密密码
   const password = encryptionPwd(pwd);
-  
-  return await request({
+
+  await request({
     url: 'https://cas.hfut.edu.cn/cas/login',
     method: 'POST',
     data: {
@@ -81,4 +81,6 @@ export async function login(options: LoginOptions) {
       'content-type': 'application/x-www-form-urlencoded'
     },
   })
+  if (cookieStrToObj(cookie.cookie)['TGC']) return true;
+  else return false;
 }
