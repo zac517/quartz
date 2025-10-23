@@ -1,5 +1,3 @@
-@import '../fonts/iconfont.wxss';
-
 $theme-color: #9370DB;
 
 .tab-bar {
@@ -26,7 +24,18 @@ $theme-color: #9370DB;
   width: 24px;
   height: 24px;
   margin: auto;
-  color: rgba(0, 0, 0, 0.5);
+}
+
+.tab-icon.icon-table {
+    font-weight: 100;
+}
+
+.tab-icon.icon-list {
+  font-weight: 100;
+}
+
+.tab-icon.icon-user {
+  font-weight: 100;
 }
 
 @keyframes pulseScale {
@@ -53,3 +62,5 @@ $theme-color: #9370DB;
 .tab-text {
   font-size: 10px;
 }
+
+@import '../icons/iconfont.wxss';

@@ -1,14 +1,13 @@
-<!--pages/timetable/timetable.wxml-->
 <view class="container">
-  <view class="toolbar">
-    <view class="table-info toolbar-child">
-      <view class="table-info-weekend">第{{ currentIndex + 1 }}周
-        <span class="iconfont icon-unfold"></span>
+  <view class="z-row toolbar">
+    <view class="z-left toolbar-info">
+      <view class="z-medium" style="font-size: 16px;">第{{ currentIndex + 1 }}周
+        <text class="iconfont icon-unfold"></text>
       </view>
-      <view class="table-info-text">2025-2026学年 第一学期</view>
+      <view class="z-text-secondary" style="font-size: 10px;">2025-2026学年 第一学期</view>
     </view>
-    <view class="toolbar-buttons toolbar-child">
-      <span class="iconfont icon-menu" bind:tap="test2"></span>
+    <view class="z-row-items z-right">
+      <text class="iconfont icon-menu z-icon-btn" bind:tap="goToList"></text>
     </view>
   </view>
   <timetable 

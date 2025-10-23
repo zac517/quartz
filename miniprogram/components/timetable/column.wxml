@@ -14,9 +14,7 @@
     </view>
     
     <!-- 午休分隔 -->
-    <view class="column-divid">
-      <view class="time-number">午休</view>
-    </view>
+    <view class="column-divid">午休</view>
     
     <!-- 下午课程 -->
     <view 
@@ -32,9 +30,7 @@
     </view>
     
     <!-- 晚休分隔 -->
-    <view class="column-divid">
-      <view class="time-number">晚休</view>
-    </view>
+    <view class="column-divid">晚休</view>
     
     <!-- 晚上课程 -->
     <view 

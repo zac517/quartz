@@ -88,6 +88,7 @@ $font-color: rgba(0, 0, 0, 0.5);
   height: calc(137.5% - #{$table-divid-height} / 4 * 3);
   display: grid;
   grid-template-rows: repeat(4, 1fr) $table-divid-height repeat(4, 1fr) $table-divid-height repeat(3, 1fr);
+  will-change: transfrom;
 }
 
 .column-wrap {

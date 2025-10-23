@@ -1,66 +1,46 @@
-// pages/timetable_list/timetable_list.ts
+import { getTimeTable } from "../../api/one/course_table"
+
 Page({
-
-  /**
-   * 页面的初始数据
-   */
   data: {
-
+    tableList: [
+      {
+        name: '课程表1',
+        id: '1',
+      },
+      {
+        name: '课程表2',
+        id: '2',
+      },
+      {
+        name: '课程表3',
+        id: '3',
+      },
+    ],
+    showOptions: false
   },
 
-  /**
-   * 生命周期函数--监听页面加载
-   */
   onLoad() {
 
   },
-
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady() {
-
+  
+  showOption() {
+    this.setData({
+      showOptions: true
+    })
   },
 
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow() {
-
+  hideOption() {
+    this.setData({
+      showOptions: false
+    })
   },
 
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide() {
-
+  stopPropagation() {
+    return false;
   },
 
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload() {
-
+  async test() {
+    const result = await getTimeTable();
+    console.log(result)
   },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh() {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom() {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage() {
-
-  }
 })

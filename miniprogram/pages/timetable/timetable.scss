@@ -1,45 +1,24 @@
-/* pages/timetable/timetable.wxss */
-
-
 .container {
   height: calc(100vh - 50px);
   display: flex;
   flex-direction: column;
 }
 
-.toolbar {
-  display: flex;
-  height: 50px;
-  padding: 5px 0;
-}
-
-.toolbar-child {
-  flex-grow: 1;
-}
-
-.table-info {
-  padding-left: 16px;
-}
-
-.toolbar-buttons {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.table-info-text {
-  color: rgba(0, 0, 0, 0.5);
-  font-size: 10px;
-  margin-top: 2px;
-}
-
-.table-info-weekend {
-  font-size: 16px;
-  font-weight: 500;
-}
-
-.toolbar-buttons .icon-menu {
+.list-btn {
   height: 40px;
   line-height: 40px;
   font-size: 20px;
   width: 40px;
+  text-align: center;
+}
+
+.toolbar-info {
+  padding-left: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.toolbar {
+  padding: 0 10px;
 }

@@ -1,7 +1,4 @@
-// pages/timetable/timetable.ts
-import { getTimeTable } from "../../api/jxglstu/course_table"
 
-// 生成20周的数据（从2024年9月8日开始，周一作为第一天）
 function generateWeeksData() {
   const startDate = new Date('2024-09-08'); // 从9月8日（周一）开始
   const weeks = [];
@@ -96,14 +93,9 @@ Page({
     });
   },
 
-  async test() {
-    const result = await getTimeTable();
-    console.log(result)
-  },
-
-  test2() {
-    this.setData({
-      currentIndex: 2
+  goToList() {
+    wx.navigateTo({
+      url: '../../pages/timetable_list/timetable_list'
     })
   },
 

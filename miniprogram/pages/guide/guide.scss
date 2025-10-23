@@ -1,16 +1,10 @@
-$animation-duration: 1s;
-
 .container {
   margin-top: calc(var(--bar-height) + 44px);
   height: calc(100vh - var(--bar-height) - 44px);
-  padding: 40px 40px 80px 40px;
+  padding: 30px 30px 60px 30px;
   display: flex;
   flex-direction: column;
   gap: 30px;
-}
-
-.guide-swiper {
-  flex-grow: 1;
 }
 
 .guide-content {
@@ -18,10 +12,6 @@ $animation-duration: 1s;
   position: absolute;
   bottom: 0;
   width: 100%;
-}
-
-.op {
-  opacity: 0 !important;
 }
 
 .guide-content-text view {
@@ -42,7 +32,7 @@ $animation-duration: 1s;
   }
 }
 
-.op .guide-content-text view {
+.z-op .guide-content-text view {
   animation: none;
 }
 
@@ -59,10 +49,11 @@ $animation-duration: 1s;
 }
 
 .indicator {
-  width: 50px;
-  height: 8px;
+  width: 70px;
+  height: 28px;
   display: inline-flex;
   gap: 5px;
+  padding: 10px;
 }
 
 .indicator-item {
@@ -74,14 +65,13 @@ $animation-duration: 1s;
 
 .guide-title {
   font-size: 28px;
-  font-weight: 600;
   margin-bottom: 30px;
+  line-height: 36px;
 }
 
 .guide-desc {
-  font-size: 14px;
   margin-bottom: 10px;
-  font-weight: 300;
+  line-height: 16px;
 }
 
 .colored {
@@ -98,17 +88,8 @@ $animation-duration: 1s;
   transition: 0.5s;
 }
 
-.guide-img.op {
+.guide-img.z-op {
   transition: 0.1s;
-}
-
-.guide-button {
-  font-weight: 600;
-}
-
-.bottom-buttons {
-  position: absolute;
-  bottom: 0;
 }
 
 .icon-img {
@@ -117,5 +98,6 @@ $animation-duration: 1s;
 }
 
 .guide-content-text {
-  height: 180px;
+  height: 200px;
+  padding: 10px;
 }

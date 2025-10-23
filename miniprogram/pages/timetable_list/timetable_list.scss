@@ -1,1 +1,42 @@
-/* pages/timetable_list/timetable_list.wxss */
+.container {
+  height: calc(100vh - 50px);
+  display: flex;
+  flex-direction: column;
+}
+
+.toolbar {
+  padding: 0 10px;
+}
+
+.options-card {
+  box-shadow: 0 0 40px rgba($color: #000000, $alpha: 0.1);
+  display: inline-block;
+  position: fixed;
+  border-radius: 10px;
+  top: 60px;
+  right: 20px;
+  overflow: hidden;
+}
+
+.options-card view {
+  border-bottom: 0.5px solid rgba($color: #000000, $alpha: 0.1);
+}
+
+.options-card view:last-child {
+  border-bottom: none
+}
+
+.table-list {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+}
+
+.table-list-item {
+  background-color: white;
+  height: 60px;
+  border-radius: 10px;
+  box-shadow: 0 0 40px rgba($color: #000000, $alpha: 0.1);
+}

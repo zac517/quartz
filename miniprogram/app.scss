@@ -1,7 +1,7 @@
-/**app.wxss**/
 view, swiper, swiper-item, scroll-view, input {
   box-sizing: border-box;
   position: relative;
+  font-size: 14px;
 }
 
 ::-webkit-scrollbar {
@@ -11,5 +11,5 @@ view, swiper, swiper-item, scroll-view, input {
   color: transparent;
 }
 
-@import './fonts/iconfont.wxss';
+@import './icons/iconfont.wxss';
 @import './styles/zui.scss';

@@ -1,2 +1,17 @@
-<!--pages/timetable_list/timetable_list.wxml-->
-<text>pages/timetable_list/timetable_list.wxml</text>
+<view class="container" bind:tap="{{ showOptions ? 'hideOption' : '' }}">
+  <view class="z-row toolbar">
+    <view class="z-row-items z-right">
+      <text class="iconfont icon-add z-icon-btn {{ showOptions ? 'z-disabled' : '' }}" bind:tap="showOption"></text>
+    </view>
+  </view>
+  <view class="table-list">
+    <view class="table-list-item" wx:for="{{ tableList }}" wx:key="index">
+      {{ item.name }}
+    </view>
+  </view>
+  <view class="options-card" wx:if="{{ showOptions }}" catchtap="stopPropagation">
+    <view class="z-button">从教务系统导入</view>
+    <view class="z-button" bindtap="test">从综合信息门户导入</view>
+    <view class="z-button z-disabled">开发中</view>
+  </view>
+</view>
