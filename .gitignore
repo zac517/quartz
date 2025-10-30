@@ -16,3 +16,5 @@ node_modules/
 project.private.config.json
 miniprogram/miniprogram_npm
 miniprogram/cloudfunctions/proxyRequest/miniprogram_npm
+
+.idea/
